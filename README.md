@@ -97,6 +97,24 @@ O dashboard está disponível na raiz do servidor (`http://localhost:8765/`). El
 ---
 **Engenharia de Organismos Digitais - MatVerse**
 
+
+## Auditoria de Convergência entre Repositórios
+
+Para mapear capacidades duplicadas/divergentes entre `matverse-organism` e `csi-organism-manager`, use:
+
+```bash
+python scripts/repo_convergence_audit.py --pretty
+```
+
+Também é possível sobrescrever caminhos padrão:
+
+```bash
+python scripts/repo_convergence_audit.py \
+  --repo matverse-organism=/workspace/matverse-organism \
+  --repo csi-organism-manager=/workspace/csi-organism-manager \
+  --pretty
+```
+
 ## Análise de Logs
 
 Para resumir rapidamente a saúde do stack a partir de logs textuais, use o utilitário:
