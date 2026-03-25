@@ -12,10 +12,32 @@ O MatVerse é um servidor proprietário que implementa um organismo digital aut�
 ## Endpoints da API
 
 - `GET /api/organism/stream`: Stream SSE com o estado atual (tick, ψ, cells).
-- `GET /api/organism/state`: Estado atual em formato JSON.
+- `GET /api/organism/state`: Estado atual em formato JSON com vitais agregados.
+- `GET /api/organism/vitals`: Snapshot explícito de vitais (`stress_index`, `ledger_health`, `responsiveness`, `status`).
 - `GET /api/cells`: Lista completa de todas as células vivas e seus parâmetros.
 - `POST /api/cell/procreate`: Injeta uma nova célula no organismo.
   - Payload: `{"energy": 1.0}`
+- `POST /api/organism/act`: Executa ações operacionais (`procreate` ou `stabilize`).
+  - Payload: `{"action":"procreate","energy":1.0}`
+- `POST /api/organism/repair`: Executa auto-reparo homeostático.
+
+### Exemplo rápido de operação
+
+```bash
+# vitais consolidados
+curl -s http://localhost:8765/api/organism/vitals | jq
+
+# perturbando o organismo (nova célula)
+curl -s -X POST http://localhost:8765/api/organism/act \
+  -H "Content-Type: application/json" \
+  -d '{"action":"procreate","energy":0.8}' | jq
+
+# estabilizando e reparando
+curl -s -X POST http://localhost:8765/api/organism/act \
+  -H "Content-Type: application/json" \
+  -d '{"action":"stabilize"}' | jq
+curl -s -X POST http://localhost:8765/api/organism/repair | jq
+```
 
 ## Como Executar
 
