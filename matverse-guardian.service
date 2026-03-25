@@ -1,0 +1,14 @@
+[Unit]
+Description=MatVerse Guardian Daemon
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/matverse-organism
+ExecStart=/usr/bin/python3 /opt/matverse-organism/organism_guardian.py --base-url http://localhost:8765
+Restart=always
+RestartSec=5
+User=matverse
+
+[Install]
+WantedBy=multi-user.target
