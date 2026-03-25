@@ -1,0 +1,69 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    margin: 0;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+}
+
+#organism-state p {
+    font-size: 1.2em;
+    margin: 5px 0;
+}
+
+#organism-state span {
+    font-weight: bold;
+    color: #007bff;
+}
+
+#procreate-button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    margin-top: 20px;
+}
+
+#procreate-button:hover {
+    background-color: #218838;
+}
+
+#cell-list {
+    margin-top: 30px;
+    border-top: 1px solid #eee;
+    padding-top: 20px;
+}
+
+#cell-list h2 {
+    color: #555;
+}
+
+#cells-data {
+    list-style: none;
+    padding: 0;
+}
+
+#cells-data li {
+    background-color: #e9ecef;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: left;
+}
