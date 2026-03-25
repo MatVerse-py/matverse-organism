@@ -96,3 +96,15 @@ O dashboard está disponível na raiz do servidor (`http://localhost:8765/`). El
 
 ---
 **Engenharia de Organismos Digitais - MatVerse**
+
+## Análise de Logs
+
+Para resumir rapidamente a saúde do stack a partir de logs textuais, use o utilitário:
+
+```bash
+python scripts/analyze_matverse_logs.py logs.txt --pretty
+# ou
+cat logs.txt | python scripts/analyze_matverse_logs.py --pretty
+```
+
+O script consolida status de frontend/backend, métricas de latência, endpoints observados, abortos de stream e suspeita de duplicação de captura de logs.
