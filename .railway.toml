@@ -1,0 +1,6 @@
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "./matverse.bin"
+port = 8765
