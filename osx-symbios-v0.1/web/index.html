@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MatVerse OSX — SymbiOS Network Notebook v0.1</title>
+<meta name="description" content="MatVerse OSX — Living Paper Interface. SymbiOS Network Notebook. Self-contained, offline, no CDN." />
+<meta name="color-scheme" content="dark light" />
+<meta name="matverse-organism" content="3.8.0" />
+<meta name="sha256-seed" content="v0.1-osx-symbios-2026-07-15" />
+<link rel="stylesheet" href="osx.css" />
+</head>
+<body class="osx-app">
+
+<!-- ============================================================ -->
+<!-- TOP BAR  · Human Node + organism presence                     -->
+<!-- ============================================================ -->
+<header class="osx-topbar" role="banner">
+  <div class="osx-topbar-left">
+    <button class="osx-apple" aria-label="MatVerse menu" title="MatVerse">●</button>
+    <span class="osx-appname">MatVerse OSX</span>
+    <span class="osx-appname-sep">·</span>
+    <span class="osx-appname-sub">SymbiOS Network Notebook</span>
+    <span class="osx-appname-sep">·</span>
+    <span class="osx-appname-sub">v0.1</span>
+  </div>
+  <nav class="osx-topbar-center" aria-label="Primary">
+    <button class="osx-tab" data-view="constellation">Constellation</button>
+    <button class="osx-tab" data-view="notebook">Notebook</button>
+    <button class="osx-tab" data-view="figure-lab">Figure Lab</button>
+    <button class="osx-tab" data-view="canvas">Cognitive Canvas</button>
+    <button class="osx-tab" data-view="atlas">Atlas</button>
+    <button class="osx-tab" data-view="registry">Registry</button>
+    <button class="osx-tab" data-view="organism">Organism</button>
+  </nav>
+  <div class="osx-topbar-right">
+    <span class="osx-omega" title="Omega Score (constitutional viability)">Ω <b id="osx-omega-value">0.81</b></span>
+    <span class="osx-gate" id="osx-gate" title="Omega-Gate state">HOLD</span>
+    <button class="osx-human-node" id="osx-human-node" title="Human Node (Mateus)">
+      <span class="osx-avatar" aria-hidden="true">MA</span>
+      <span class="osx-human-label">Mateus · Human Node</span>
+    </button>
+  </div>
+</header>
+
+<!-- ============================================================ -->
+<!-- MAIN  · view container                                        -->
+<!-- ============================================================ -->
+<main id="osx-main" class="osx-main">
+
+  <!-- ===========  CONSTELLATION  =========== -->
+  <section class="osx-view osx-view-constellation is-active" data-view="constellation" aria-label="Constellation view">
+    <div class="osx-constellation-header">
+      <h1>MatVerse Constellation</h1>
+      <p>Rede viva de notebooks, organismos, humanos e máquinas. Aproxime e afaste para navegar entre <b>macro</b>, <b>meso</b> e <b>micro</b>.</p>
+      <div class="osx-zoom">
+        <button data-zoom="out">−</button>
+        <span id="osx-zoom-level">1.0×</span>
+        <button data-zoom="in">+</button>
+        <button data-zoom="fit">fit</button>
+      </div>
+    </div>
+    <svg id="osx-constellation-svg" class="osx-constellation-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    <aside class="osx-constellation-side">
+      <h3>Estado da rede</h3>
+      <ul class="osx-stats">
+        <li><b id="stat-notebooks">6</b> notebooks</li>
+        <li><b id="stat-cells">28</b> células</li>
+        <li><b id="stat-organs">12</b> órgãos constitucionais</li>
+        <li><b id="stat-physics">3</b> física constitucional</li>
+        <li><b id="stat-mmnbs">3</b> MMNBs cross-run</li>
+      </ul>
+      <h3>Plano informacional</h3>
+      <p class="osx-muted">Identidade, memória e relações.</p>
+      <h3>Plano digital</h3>
+      <p class="osx-muted">Programação, cognição e governança.</p>
+      <h3>Plano físico</h3>
+      <p class="osx-muted">Humanos, máquinas, recursos e consequência.</p>
+    </aside>
+  </section>
+
+  <!-- ===========  NOTEBOOK  =========== -->
+  <section class="osx-view osx-view-notebook" data-view="notebook" aria-label="Notebook view">
+    <aside class="osx-notebook-left" aria-label="Information network">
+      <header>
+        <h3>Rede informacional</h3>
+        <input type="search" id="nb-search" placeholder="buscar célula, hipótese, claim…" />
+      </header>
+      <ul class="osx-nb-list" id="osx-nb-list"></ul>
+    </aside>
+    <section class="osx-notebook-center" id="osx-notebook-center" aria-label="Spatial notebook">
+      <header class="osx-nb-header">
+        <h2 id="osx-nb-title">URANO Laboratory</h2>
+        <span class="osx-nb-meta" id="osx-nb-meta">NB-URANO-001 · Gate: HOLD</span>
+      </header>
+      <div class="osx-nb-cells" id="osx-nb-cells"></div>
+    </section>
+    <aside class="osx-notebook-right" aria-label="Triadic inspector">
+      <header>
+        <h3>Inspector triádico</h3>
+      </header>
+      <section class="osx-lens" data-lens="informational">
+        <h4>INFORMATIONAL</h4>
+        <div id="lens-informational"><p class="osx-muted">Selecione uma célula.</p></div>
+      </section>
+      <section class="osx-lens" data-lens="digital">
+        <h4>DIGITAL</h4>
+        <div id="lens-digital"><p class="osx-muted">Selecione uma célula.</p></div>
+      </section>
+      <section class="osx-lens" data-lens="physical">
+        <h4>PHYSICAL</h4>
+        <div id="lens-physical"><p class="osx-muted">Selecione uma célula.</p></div>
+      </section>
+    </aside>
+    <footer class="osx-notebook-bottom" aria-label="Cassandra command bar">
+      <input type="text" id="cassandra-cmd" placeholder="Cassandra: 'crie hipótese sobre o experimento 4' / 'rode a simulação' / 'explique a célula 2'…" />
+      <button id="cassandra-run">Run</button>
+      <span class="osx-cassandra-status" id="cassandra-status">Cassandra local · demonstrativa · não-LLM</span>
+    </footer>
+  </section>
+
+  <!-- ===========  FIGURE LAB  =========== -->
+  <section class="osx-view osx-view-figure-lab" data-view="figure-lab" aria-label="Figure Lab">
+    <header class="osx-fl-header">
+      <h2>Figure Lab</h2>
+      <p>Compilador científico visual. Renderização determinística por categoria — sem chamada generativa para figuras técnicas.</p>
+    </header>
+    <div class="osx-fl-body">
+      <aside class="osx-fl-side">
+        <h4>Categoria</h4>
+        <select id="fl-category">
+          <option value="PLOT_2D">PLOT_2D</option>
+          <option value="SURFACE_3D">SURFACE_3D</option>
+          <option value="FREE_BODY_DIAGRAM" selected>FREE_BODY_DIAGRAM</option>
+          <option value="CHEMICAL_STRUCTURE">CHEMICAL_STRUCTURE</option>
+          <option value="BIOLOGICAL_CELL">BIOLOGICAL_CELL</option>
+          <option value="BIOCHEMICAL_CYCLE">BIOCHEMICAL_CYCLE</option>
+          <option value="ELECTRICAL_CIRCUIT">ELECTRICAL_CIRCUIT</option>
+          <option value="FLOWCHART">FLOWCHART</option>
+          <option value="SYSTEM_ARCHITECTURE">SYSTEM_ARCHITECTURE</option>
+          <option value="NETWORK_GRAPH">NETWORK_GRAPH</option>
+          <option value="TIMELINE">TIMELINE</option>
+          <option value="CONCEPT_MAP">CONCEPT_MAP</option>
+          <option value="QUANTUM_CIRCUIT">QUANTUM_CIRCUIT</option>
+          <option value="MATHEMATICAL_GEOMETRY">MATHEMATICAL_GEOMETRY</option>
+        </select>
+        <h4>Estilo / Modo</h4>
+        <select id="fl-style">
+          <option value="AUTO" selected>AUTO</option>
+          <option value="SCIENTIFIC_SVG">SCIENTIFIC_SVG</option>
+          <option value="TECHNICAL_DIAGRAM">TECHNICAL_DIAGRAM</option>
+          <option value="DATA_VISUALIZATION">DATA_VISUALIZATION</option>
+          <option value="PUBLICATION_FIGURE">PUBLICATION_FIGURE</option>
+          <option value="EDUCATIONAL_ILLUSTRATION">EDUCATIONAL_ILLUSTRATION</option>
+        </select>
+        <h4>Prompt / descrição</h4>
+        <textarea id="fl-prompt" rows="5" placeholder="Ex: 'plano inclinado a 30°, bloco de 2kg, vetores peso/normal/atrito'"></textarea>
+        <h4>Validação (Visual Ω-Gate)</h4>
+        <ul class="osx-fl-checks">
+          <li><label><input type="checkbox" data-check="structure" checked /> estrutura formal</label></li>
+          <li><label><input type="checkbox" data-check="labels" checked /> rótulos corretos</label></li>
+          <li><label><input type="checkbox" data-check="units" checked /> unidades presentes</label></li>
+          <li><label><input type="checkbox" data-check="axes" checked /> eixos definidos</label></li>
+          <li><label><input type="checkbox" data-check="nohallucination" checked /> sem elementos inventados</label></li>
+        </ul>
+        <button id="fl-generate" class="osx-btn-primary">Gerar figura</button>
+        <button id="fl-export-svg" class="osx-btn-ghost">Exportar SVG</button>
+      </aside>
+      <section class="osx-fl-stage">
+        <svg id="fl-svg" class="osx-fl-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"></svg>
+        <footer class="osx-fl-status" id="fl-status">aguardando prompt…</footer>
+      </section>
+    </div>
+  </section>
+
+  <!-- ===========  COGNITIVE CANVAS  =========== -->
+  <section class="osx-view osx-view-canvas" data-view="canvas" aria-label="Cognitive Canvas">
+    <header class="osx-cc-header">
+      <h2>Cognitive Canvas</h2>
+      <div class="osx-cc-tools">
+        <button data-cc-tool="select">selecionar</button>
+        <button data-cc-tool="add-hyp">+ hipótese</button>
+        <button data-cc-tool="add-exp">+ experimento</button>
+        <button data-cc-tool="add-evi">+ evidência</button>
+        <button data-cc-tool="add-src">+ fonte</button>
+        <button data-cc-tool="connect">conectar</button>
+        <button data-cc-tool="delete">apagar</button>
+        <span class="osx-cc-spacer"></span>
+        <button id="cc-export">exportar JSON</button>
+        <button id="cc-import">importar JSON</button>
+      </div>
+    </header>
+    <div class="osx-cc-stage-wrap">
+      <svg id="cc-svg" class="osx-cc-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+    <footer class="osx-cc-status" id="cc-status">
+      Forma: <select id="cc-shape"> <option value="circle">círculo (OBS)</option> <option value="diamond">losango (INF)</option>
+      <option value="hexagon" selected>hexágono (HYP)</option> <option value="rect">retângulo (EVD)</option>
+      <option value="rect-bold">retângulo reforçado (ADM)</option> <option value="circle-bold">círculo reforçado (CON)</option>
+      <option value="diamond-blink">losango blink (ESC)</option> <option value="block">bloqueado (BLOCK)</option> </select>
+    </footer>
+  </section>
+
+  <!-- ===========  ATLAS  =========== -->
+  <section class="osx-view osx-view-atlas" data-view="atlas" aria-label="Atlas view">
+    <header><h2>Atlas</h2><p>Constituição, ontologia, claim graph e linhagem.</p></header>
+    <div class="osx-atlas-grid">
+      <article>
+        <h3>Constituição (12 órgãos)</h3>
+        <ol class="osx-atlas-organs" id="osx-atlas-organs"></ol>
+      </article>
+      <article>
+        <h3>Física constitucional (3)</h3>
+        <ol class="osx-atlas-physics" id="osx-atlas-physics"></ol>
+      </article>
+      <article>
+        <h3>Invariantes (I1..I8) · fail-closed</h3>
+        <ul class="osx-atlas-invariants" id="osx-atlas-invariants"></ul>
+      </article>
+      <article>
+        <h3>Lei operacional</h3>
+        <p class="osx-callout">Constituição não executa. Interpretação não decide sozinha. Métrica não autoriza ação. Execução não reescreve a prova. Witness não cria verdade.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===========  REGISTRY  =========== -->
+  <section class="osx-view osx-view-registry" data-view="registry" aria-label="Registry view">
+    <header><h2>Registry</h2><p>Órgãos, funções e estados públicos. Read-only nesta release.</p></header>
+    <table class="osx-registry" id="osx-registry">
+      <thead><tr><th>id</th><th>tipo</th><th>descrição</th><th>estado</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <!-- ===========  ORGANISM  =========== -->
+  <section class="osx-view osx-view-organism" data-view="organism" aria-label="Organism runtime">
+    <header><h2>Organism runtime</h2><p>v3.8.0 · 12 órgãos + 3 física + 253/253 testes. Esta página executa a demo local.</p></header>
+    <div class="osx-org-grid">
+      <div><label>Problema</label>
+        <textarea id="org-problem" rows="3">Should we adopt an offline CLI for the organism?</textarea>
+      </div>
+      <div>
+        <button id="org-run">rodar runner</button>
+        <button id="org-omega">recalcular Ω</button>
+        <button id="org-mmnb">novo MMNB</button>
+      </div>
+      <pre id="org-out" class="osx-org-out">aguardando…</pre>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================ -->
+<!-- DOCK                                                         -->
+<!-- ============================================================ -->
+<footer class="osx-dock" role="contentinfo">
+  <button class="osx-dock-item" data-view="constellation" title="Constellation">◉</button>
+  <button class="osx-dock-item" data-view="notebook" title="Notebook">▣</button>
+  <button class="osx-dock-item" data-view="figure-lab" title="Figure Lab">◇</button>
+  <button class="osx-dock-item" data-view="canvas" title="Cognitive Canvas">⬡</button>
+  <button class="osx-dock-item" data-view="atlas" title="Atlas">⟁</button>
+  <button class="osx-dock-item" data-view="registry" title="Registry">≡</button>
+  <button class="osx-dock-item" data-view="organism" title="Organism">⏣</button>
+  <span class="osx-dock-sep"></span>
+  <span class="osx-dock-meta">MatVerse Organism v3.8.0 · SymbiOS v0.1 · OFFLINE</span>
+</footer>
+
+<!-- ============================================================ -->
+<!-- SCRIPTS                                                      -->
+<!-- ============================================================ -->
+<script src="osx-core.js"></script>
+<script src="osx-figure-lab.js"></script>
+<script src="osx-canvas.js"></script>
+<script src="osx-organism.js"></script>
+<script src="osx-app.js"></script>
+</body>
+</html>
