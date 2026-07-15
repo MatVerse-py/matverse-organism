@@ -24,6 +24,22 @@ sends, reads, and logs.
 The Base44 API key is read from the environment variable
 `BASE44_API_KEY` and is never stored on disk. If the variable is
 absent, the module falls back to STANDALONE mode automatically.
+
+SECURITY MODEL (constitutional, fail-closed):
+  - The `api_key` is read ONLY at `Base44Client.__init__` time.
+  - It is exchanged immediately for a `SessionToken` (time-limited)
+    via `POST /auth/session`. The `api_key` is then dropped from
+    memory (replaced with `None`).
+  - All subsequent calls use the `SessionToken` as Bearer credential.
+  - For agent operations, a `CapabilityToken` is minted on-demand
+    via `POST /auth/capability` with scope: agent_id + skill_name
+    and a TTL. The capability token is also time-limited and
+    auditable.
+  - The `api_key` is NEVER sent as a request header on calls other
+    than the initial session bootstrap. The token model follows
+    the constitutional position: "frontend never holds the permanent
+    key; backend stores it; session gets a temporary token; agent
+    gets a capability token, not the main key."
 """
 
 from __future__ import annotations
@@ -46,58 +62,135 @@ API_KEY_ENV = "BASE44_API_KEY"
 # The user can override via the `agent_id` parameter to Base44Agent.
 DEFAULT_OSX_CHAT_AGENT = "osx_chat"
 
+# Default TTL for session and capability tokens (seconds).
+DEFAULT_SESSION_TTL = 3600          # 1 hour
+DEFAULT_CAPABILITY_TTL = 600        # 10 minutes
+
 
 # ---------------------------------------------------------------------------
-# Client
+# Errors
 # ---------------------------------------------------------------------------
 
 class Base44Error(RuntimeError):
     """Raised on any Base44 API error."""
 
+
+# ---------------------------------------------------------------------------
+# Token types
+# ---------------------------------------------------------------------------
+
+@dataclass
+class SessionToken:
+    """A time-limited session token. Replaces the api_key for all
+    subsequent calls after the initial bootstrap."""
+    token: str
+    issued_at: int
+    ttl_seconds: int
+    user_id: str = ""
+
+    def is_expired(self, now: Optional[int] = None) -> bool:
+        if now is None:
+            now = int(time.time())
+        return (now - self.issued_at) >= self.ttl_seconds
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "token": self.token,
+            "issued_at": self.issued_at,
+            "ttl_seconds": self.ttl_seconds,
+            "user_id": self.user_id,
+        }
+
+
+@dataclass
+class CapabilityToken:
+    """A scoped, time-limited token authorizing one agent skill call.
+
+    Format: bound to (agent_id, skill_name). Cannot be reused across
+    different agents/skills. Audited server-side."""
+    token: str
+    agent_id: str
+    skill_name: str
+    issued_at: int
+    ttl_seconds: int
+    scope: Dict[str, Any] = field(default_factory=dict)
+
+    def is_expired(self, now: Optional[int] = None) -> bool:
+        if now is None:
+            now = int(time.time())
+        return (now - self.issued_at) >= self.ttl_seconds
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "token": self.token,
+            "agent_id": self.agent_id,
+            "skill_name": self.skill_name,
+            "issued_at": self.issued_at,
+            "ttl_seconds": self.ttl_seconds,
+            "scope": dict(self.scope),
+        }
+
+
+# ---------------------------------------------------------------------------
+# Client
+# ---------------------------------------------------------------------------
+
 class Base44Client:
     """Thin REST client for the Base44 public API.
 
     Endpoints used (per the Base44 docs page in the corpus):
-      GET  /entities/{name}                    — list records
-      POST /entities/{name}                    — create record
-      GET  /entities/{name}/{id}               — get record
-      PUT  /entities/{name}/{id}               — update record
-      GET  /apps/{id}/agents/conversations     — list conversations
-      POST /apps/{id}/agents/conversations     — create conversation
-      GET  /apps/{id}/agents/conversations/{cid}  — get conversation
-      POST /apps/{id}/agents/conversations/{cid}/messages — send message
+      POST /auth/session                          — exchange api_key → SessionToken
+      POST /auth/capability                       — mint CapabilityToken (session+agent+skill)
+      GET  /entities/{name}                       — list records (uses session)
+      POST /entities/{name}                       — create record (uses session)
+      GET  /entities/{name}/{id}                  — get record (uses session)
+      PUT  /entities/{name}/{id}                  — update record (uses session)
+      GET  /apps/{id}/agents/conversations        — list conversations (uses capability)
+      POST /apps/{id}/agents/conversations        — create conversation (uses capability)
+      GET  /apps/{id}/agents/conversations/{cid}  — get conversation (uses capability)
+      POST /apps/{id}/agents/conversations/{cid}/messages — send message (uses capability)
+
+    Constitutional position: the `api_key` is held only during the
+    bootstrap (constructor) and is exchanged for a `SessionToken`.
+    After bootstrap, the `api_key` attribute is `None` and every
+    call uses Bearer credentials.
     """
 
     def __init__(self, api_key: Optional[str] = None,
                  base_url: str = DEFAULT_BASE_URL,
-                 app_id: str = DEFAULT_APP_ID) -> None:
-        self.api_key = api_key or os.environ.get(API_KEY_ENV, "")
+                 app_id: str = DEFAULT_APP_ID,
+                 session_ttl: int = DEFAULT_SESSION_TTL) -> None:
+        # api_key is read once, at construction, and never persisted
+        self._api_key = api_key or os.environ.get(API_KEY_ENV, "")
         self.base_url = base_url.rstrip("/")
         self.app_id = app_id
-        if not self.api_key:
-            # don't raise — caller may be using STANDALONE mode
-            pass
+        self.session_ttl = session_ttl
+        self.session: Optional[SessionToken] = None
+        self._capability_cache: Dict[str, CapabilityToken] = {}
 
     @property
     def is_configured(self) -> bool:
-        return bool(self.api_key)
+        return bool(self._api_key) or self.session is not None
 
-    def _request(self, method: str, path: str,
-                body: Optional[Dict[str, Any]] = None,
-                params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        if not self.is_configured:
-            raise Base44Error("BASE44_API_KEY not set")
+    @property
+    def is_authenticated(self) -> bool:
+        return self.session is not None and not self.session.is_expired()
+
+    def _request_with(self, method: str, path: str,
+                      body: Optional[Dict[str, Any]] = None,
+                      params: Optional[Dict[str, Any]] = None,
+                      bearer: Optional[str] = None,
+                      extra_headers: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
         url = f"{self.base_url}{path}"
         if params:
             url += "?" + urllib.parse.urlencode(params)
         data = None if body is None else json.dumps(body).encode("utf-8")
-        req = urllib.request.Request(
-            url, data=data, method=method,
-            headers={
-                "api_key": self.api_key,
-                "Content-Type": "application/json",
-            },
-        )
+        headers: Dict[str, str] = {"Content-Type": "application/json"}
+        if bearer:
+            headers["Authorization"] = f"Bearer {bearer}"
+        if extra_headers:
+            headers.update(extra_headers)
+        req = urllib.request.Request(url, data=data, method=method, headers=headers)
         try:
             with urllib.request.urlopen(req, timeout=30) as resp:
                 payload = resp.read().decode("utf-8")
@@ -108,28 +201,108 @@ class Base44Client:
         except urllib.error.URLError as e:
             raise Base44Error(f"URL error: {e}") from e
 
-    # ---- entities ----
+    # ---- bootstrap: api_key → SessionToken ----
+    def authenticate(self) -> SessionToken:
+        """Exchange the api_key for a SessionToken.
+
+        After this call:
+          - `self.session` is set
+          - `self._api_key` is wiped from memory (set to None)
+        """
+        if not self._api_key:
+            raise Base44Error("BASE44_API_KEY not set")
+        # Bootstrap: this is the ONLY call that uses the api_key.
+        # We pass it as a header on the bootstrap endpoint, never again.
+        resp = self._request_with(
+            "POST", "/auth/session",
+            body={"app_id": self.app_id, "ttl_seconds": self.session_ttl},
+            extra_headers={"api_key": self._api_key},
+        )
+        # Wipe the key from memory after bootstrap
+        self._api_key = None
+        self.session = SessionToken(
+            token=resp.get("token", ""),
+            issued_at=resp.get("issued_at", int(time.time())),
+            ttl_seconds=resp.get("ttl_seconds", self.session_ttl),
+            user_id=resp.get("user_id", ""),
+        )
+        return self.session
+
+    def _bearer(self) -> str:
+        if not self.is_authenticated:
+            self.authenticate()
+        assert self.session is not None
+        return self.session.token
+
+    # ---- capability token (for agent ops) ----
+    def get_capability(self, agent_id: str, skill_name: str,
+                       ttl_seconds: int = DEFAULT_CAPABILITY_TTL,
+                       scope: Optional[Dict[str, Any]] = None) -> CapabilityToken:
+        """Mint a CapabilityToken for (agent_id, skill_name).
+
+        The capability token is cached for `ttl_seconds`. After that
+        it is automatically re-minted on the next call."""
+        cache_key = f"{agent_id}::{skill_name}"
+        cached = self._capability_cache.get(cache_key)
+        if cached is not None and not cached.is_expired():
+            return cached
+        bearer = self._bearer()
+        resp = self._request_with(
+            "POST", "/auth/capability",
+            body={
+                "agent_id": agent_id,
+                "skill_name": skill_name,
+                "ttl_seconds": ttl_seconds,
+                "scope": scope or {},
+            },
+            bearer=bearer,
+        )
+        cap = CapabilityToken(
+            token=resp.get("token", ""),
+            agent_id=agent_id,
+            skill_name=skill_name,
+            issued_at=resp.get("issued_at", int(time.time())),
+            ttl_seconds=resp.get("ttl_seconds", ttl_seconds),
+            scope=resp.get("scope", scope or {}),
+        )
+        self._capability_cache[cache_key] = cap
+        return cap
+
+    def _bearer_capability(self, agent_id: str, skill_name: str) -> str:
+        cap = self.get_capability(agent_id, skill_name)
+        return cap.token
+
+    # ---- entities (use session bearer) ----
     def list_entities(self, entity: str, limit: int = 50) -> List[Dict[str, Any]]:
-        return self._request("GET", f"/entities/{entity}", params={"limit": limit})
+        return self._request_with("GET", f"/entities/{entity}",
+                                   params={"limit": limit},
+                                   bearer=self._bearer())
 
     def get_entity(self, entity: str, record_id: str) -> Dict[str, Any]:
-        return self._request("GET", f"/entities/{entity}/{record_id}")
+        return self._request_with("GET", f"/entities/{entity}/{record_id}",
+                                   bearer=self._bearer())
 
     def create_entity(self, entity: str, fields: Dict[str, Any]) -> Dict[str, Any]:
-        return self._request("POST", f"/entities/{entity}", body=fields)
+        return self._request_with("POST", f"/entities/{entity}",
+                                   body=fields, bearer=self._bearer())
 
-    # ---- agent conversations ----
-    def list_conversations(self) -> List[Dict[str, Any]]:
-        return self._request("GET", f"/apps/{self.app_id}/agents/conversations")
+    # ---- agent conversations (use capability token) ----
+    def list_conversations(self, agent_id: str = DEFAULT_OSX_CHAT_AGENT) -> List[Dict[str, Any]]:
+        return self._request_with("GET", f"/apps/{self.app_id}/agents/conversations",
+                                   bearer=self._bearer_capability(agent_id, "list_conversations"))
 
-    def create_conversation(self, title: str = "cassandra-session") -> Dict[str, Any]:
-        return self._request("POST", f"/apps/{self.app_id}/agents/conversations",
-                              body={"title": title})
+    def create_conversation(self, title: str = "cassandra-session",
+                            agent_id: str = DEFAULT_OSX_CHAT_AGENT) -> Dict[str, Any]:
+        return self._request_with("POST", f"/apps/{self.app_id}/agents/conversations",
+                                   body={"title": title, "agent_id": agent_id},
+                                   bearer=self._bearer_capability(agent_id, "create_conversation"))
 
-    def send_message(self, conversation_id: str, content: str) -> Dict[str, Any]:
-        return self._request("POST",
+    def send_message(self, conversation_id: str, content: str,
+                     agent_id: str = DEFAULT_OSX_CHAT_AGENT) -> Dict[str, Any]:
+        return self._request_with("POST",
             f"/apps/{self.app_id}/agents/conversations/{conversation_id}/messages",
-            body={"role": "user", "content": content})
+            body={"role": "user", "content": content},
+            bearer=self._bearer_capability(agent_id, "send_message"))
 
 
 # ---------------------------------------------------------------------------
