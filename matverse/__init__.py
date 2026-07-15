@@ -118,9 +118,16 @@ from .canonical import (
     CONSTITUTIONAL_ORGANS_V3_8, CONSTITUTIONAL_PHYSICS_V3_8,
     ConstitutionalState, next_organ,
 )
+# v3.8.2 — Cassandra agent (constitutional, fail-closed)
+from .cassandra_agent import (
+    CASSANDRA_SYSTEM_PROMPT, ROLE, SCOPE, ADMISSIBILITY, EPITEMIC,
+    CANONICAL_CORPUS, Base44Client, Base44Error, CassandraAgent,
+    CassandraRun, DEFAULT_APP_ID, DEFAULT_BASE_URL,
+    DEFAULT_OSX_CHAT_AGENT, API_KEY_ENV, local_interpret,
+)
 
-__version__ = "3.8.1"
-__sha256_seed__ = "v3.8-seed-2026-07-15"
+__version__ = "3.8.2"
+__sha256_seed__ = "v3.8.2-seed-2026-07-15"
 
 __all__ = [
     # v3.0
@@ -173,4 +180,9 @@ __all__ = [
     "normalize_pbr", "normalize_rrec", "OmegaReport",
     "CONSTITUTIONAL_ORGANS_V3_8", "CONSTITUTIONAL_PHYSICS_V3_8",
     "ConstitutionalState", "next_organ",
+    # v3.8.2
+    "CASSANDRA_SYSTEM_PROMPT", "ROLE", "SCOPE", "ADMISSIBILITY", "EPITEMIC", "CANONICAL_CORPUS",
+    "Base44Client", "Base44Error", "CassandraAgent", "CassandraRun",
+    "DEFAULT_APP_ID", "DEFAULT_BASE_URL", "DEFAULT_OSX_CHAT_AGENT", "API_KEY_ENV",
+    "local_interpret",
 ]

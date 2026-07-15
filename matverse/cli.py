@@ -242,6 +242,28 @@ def cmd_cassandra_interpret(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_cassandra_chat(args: argparse.Namespace) -> int:
+    """Conversational Cassandra — constitutional, fail-closed."""
+    from .cassandra_agent import CassandraAgent
+    agent = CassandraAgent(mode=args.mode or "auto")
+    print(f"[mode: {agent.mode}]")
+    run = agent.chat(args.message, persist=args.persist)
+    print(f"[run_id: {run.run_id}]")
+    print(f"[epistemic: {run.epistemic_classification}]")
+    print(f"[gate: {run.gate_status}]")
+    print(f"[base44: {run.used_base44}]")
+    print("---")
+    print(run.cassandra_response)
+    return 0
+
+
+def cmd_cassandra_system_prompt(args: argparse.Namespace) -> int:
+    """Print the constitutional system prompt used by Cassandra."""
+    from .cassandra_agent import CASSANDRA_SYSTEM_PROMPT
+    print(CASSANDRA_SYSTEM_PROMPT)
+    return 0
+
+
 def cmd_svca_replay(args: argparse.Namespace) -> int:
     umjam = UMJAM()
     umjam.registry.register_builtins()
@@ -492,6 +514,15 @@ def build_parser() -> argparse.ArgumentParser:
     p_cas_int = cas_sub.add_parser("interpret", help="Interpret a problem")
     p_cas_int.add_argument("-i", "--input", required=True)
     p_cas_int.set_defaults(func=cmd_cassandra_interpret)
+    p_cas_chat = cas_sub.add_parser("chat", help="Conversational Cassandra (constitutional, fail-closed)")
+    p_cas_chat.add_argument("message", help="User message to Cassandra")
+    p_cas_chat.add_argument("--mode", choices=["auto", "standalone", "base44"], default="auto",
+                            help="Agent mode (default: auto-detect from BASE44_API_KEY env var)")
+    p_cas_chat.add_argument("--persist", action="store_true",
+                            help="Persist the run to Base44 (only works in base44 mode)")
+    p_cas_chat.set_defaults(func=cmd_cassandra_chat)
+    p_cas_prompt = cas_sub.add_parser("prompt", help="Print the constitutional system prompt")
+    p_cas_prompt.set_defaults(func=cmd_cassandra_system_prompt)
 
     p_svca = sub.add_parser("svca", help="SVCA proof capsule")
     svca_sub = p_svca.add_subparsers(dest="svca_command", required=True)
