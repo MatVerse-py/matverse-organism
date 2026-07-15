@@ -31,3 +31,4 @@ htmlcov/
 # MatVerse-specific
 validation/ledger.json
 *.bak
+validation/mmnb/
