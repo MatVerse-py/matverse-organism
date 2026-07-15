@@ -1,0 +1,50 @@
+# Build the Python v3 layer (HypothesisOps cognitive cortex).
+# This complements the existing Go kernel (matverse.kernel.go) which
+# remains the runtime substrate for the cellular simulation.
+FROM python:3.11-alpine AS python-builder
+
+WORKDIR /opt/matverse
+
+# Copy the v3 package source
+COPY matverse/ ./matverse/
+COPY schemas/ ./schemas/
+COPY pyproject.toml ./
+
+# Install (no external deps, but the build is reproducible)
+RUN pip install --no-cache-dir --prefix=/install .
+
+# ----------------------------------------------------------------------------
+# Final image: Go kernel + Python cognitive layer + static web UI
+# ----------------------------------------------------------------------------
+FROM golang:1.21-alpine AS go-builder
+
+WORKDIR /app
+COPY matverse.kernel.go .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o matverse.bin matverse.kernel.go
+
+# ----------------------------------------------------------------------------
+FROM alpine:latest
+
+WORKDIR /app
+
+# Go kernel (existing)
+COPY --from=go-builder /app/matverse.bin .
+COPY web/ ./web/
+
+# Python cognitive layer (new in v3.0.0)
+COPY --from=python-builder /install /usr/local
+COPY schemas/ /opt/matverse/schemas/
+COPY examples/ /opt/matverse/examples/
+COPY SKILL.md README.md CHANGELOG.md LICENSE mmnb_seed.json CITATION.cff /opt/matverse/
+
+# Python runtime
+RUN apk add --no-cache python3 py3-pip
+
+ENV PYTHONPATH=/usr/local/lib/python3.11/site-packages
+
+EXPOSE 8765
+
+# Default: start the Go kernel. The Python v3 organ is invoked
+# via `python -m matverse ...` from the operator's terminal, or via
+# a future `hypo` REST endpoint.
+CMD ["./matverse.bin"]

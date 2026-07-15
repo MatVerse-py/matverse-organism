@@ -1,0 +1,30 @@
+{
+  "id": "P_SIMPLE",
+  "objective": "Test that seed=42 produces reproducible results",
+  "scope": "test",
+  "constraints": [],
+  "stakeholders": ["tester"],
+  "hypotheses": [
+    {
+      "id": "H_REPRO",
+      "claim": "Seed=42 always gives mean >= 0.5",
+      "variables": {
+        "value": 1.0
+      },
+      "evidence_for": ["PRNG determinism"],
+      "evidence_against": [],
+      "falsification_criteria": "value < 0.5",
+      "test_method": "monte_carlo",
+      "cost_estimate": 1.0,
+      "expected_value": 10.0,
+      "risk": 0.1,
+      "reversibility": 1.0,
+      "lineage": ["v2.0.0"]
+    }
+  ],
+  "metadata": {
+    "science_origin": "PRNG theory (Mersenne Twister, numpy, python random)",
+    "contract": "executor-contract-v3",
+    "ecosystem_impact": "none"
+  }
+}
