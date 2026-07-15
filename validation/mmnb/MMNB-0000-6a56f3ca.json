@@ -1,0 +1,31 @@
+{
+  "id": "MMNB-0000-6a56f3ca",
+  "parent_id": null,
+  "lineage": [],
+  "generation": 0,
+  "capabilities": [
+    "ast_diff.v1",
+    "axis8_score.v1",
+    "coverage_report.v1",
+    "echo.v1",
+    "hypothesis_decompose.v1",
+    "json_validate.v1",
+    "ledger_append.v1",
+    "ledger_verify.v1",
+    "mbit_record.v1",
+    "monte_carlo_propagation.v1",
+    "paired_metric_comparison.v1",
+    "publish_metadata.v1",
+    "schema_infer.v1",
+    "sensitivity_analysis.v1",
+    "thermal_record.v1"
+  ],
+  "recent_closures": [],
+  "last_decision": "",
+  "top_strategy": "",
+  "self_health": {},
+  "issued_at": 1784083402,
+  "issued_by": "3.7.0",
+  "notes": "genesis mmnb",
+  "hash": "d11807d18c96b20fbc89226b51f813dff2dd74d74d601e6d9216a7da6e79b46c"
+}

@@ -109,6 +109,11 @@ class CapabilityRegistry:
 
     Capabilities are pure: they receive a state and a spec, and return a new
     state dict. They MUST NOT perform side effects on the world.
+
+    Note: in v3.7.0 the canonical registry is
+    `matverse.capability.CapabilityRegistry`, which is contract-driven.
+    This simpler dictionary-style registry is kept for back-compat with
+    v3.0–v3.6 tests and for UMJAM's internal usage.
     """
 
     def __init__(self) -> None:

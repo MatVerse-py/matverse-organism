@@ -67,9 +67,19 @@ from .publishers import (
 )
 from .replay import Replayer, ReplayReport
 from .runner import FullOrganismRunner, FullOrganismResult
+from .capability import CapabilityRegistry as CanonicalCapabilityRegistry, CapabilityContract
+from .mmnb import MMNB, MMNBStore
+from .adaptation import (
+    AdaptationMetacortex, ApoptosisScheduler, AutopoiesisGenerator,
+    CrossRunOrganism, CapabilityGap,
+)
+from .probes import (
+    DeclaredProbe as ProbeDeclared, RaplProbe, NvmlProbe,
+    CompositeProbe, make_default_probe, ProbeMeasurement,
+)
 
-__version__ = "3.6.0"
-__sha256_seed__ = "v3.6-seed-2026-07-14"
+__version__ = "3.7.0"
+__sha256_seed__ = "v3.7-seed-2026-07-14"
 
 __all__ = [
     # v3.0
@@ -102,4 +112,10 @@ __all__ = [
     "github_release_metadata", "huggingface_metadata", "blockchain_anchor",
     "Replayer", "ReplayReport",
     "FullOrganismRunner", "FullOrganismResult",
+    "CanonicalCapabilityRegistry", "CapabilityContract",
+    "MMNB", "MMNBStore",
+    "AdaptationMetacortex", "ApoptosisScheduler", "AutopoiesisGenerator",
+    "CrossRunOrganism", "CapabilityGap",
+    "ProbeDeclared", "RaplProbe", "NvmlProbe", "CompositeProbe",
+    "make_default_probe", "ProbeMeasurement",
 ]

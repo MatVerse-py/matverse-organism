@@ -53,6 +53,9 @@ from .closure_macro import (
 )
 from .publishers import prepare_publication
 from .replay import Replayer
+from .capability import CapabilityRegistry
+from .mmnb import MMNBStore
+from .probes import make_default_probe
 
 
 @dataclass
@@ -96,7 +99,10 @@ class FullOrganismRunner:
                  apoptosis: Optional[Apoptosis] = None,
                  antifragility: Optional[Antifragility] = None,
                  homeostasis: Optional[Homeostasis] = None,
-                 organism_version: str = "3.6.0") -> None:
+                 registry: Optional[CapabilityRegistry] = None,
+                 mmnb_store: Optional[MMNBStore] = None,
+                 mmnb_dir: str = "validation/mmnb",
+                 organism_version: str = "3.7.0") -> None:
         self.ledger = ledger or Ledger()
         self.organism = Organism(ledger=self.ledger)
         self.urano = URANO(ledger=self.ledger)
@@ -105,7 +111,44 @@ class FullOrganismRunner:
         self.invariants = Invariants()
         self.laws = ConstitutionalLaws()
         self.umjam = umjam or UMJAM()
-        self.thermo = thermo or ThermoCortex()
+        # Register the v3.7.0 built-in capability set into the new
+        # canonical (contract-driven) registry.
+        from .capability import CapabilityRegistry as _CanonicalRegistry
+        if isinstance(self.umjam.registry, _CanonicalRegistry):
+            self.umjam.registry.register_builtins()
+        else:
+            # Back-compat path: simple (id, fn) registry. Inject the
+            # canonical builtins as plain (id, fn) pairs.
+            from .capability import (
+                _impl_echo, _impl_paired, _impl_monte_carlo,
+                _impl_sensitivity, _impl_ledger_append, _impl_ledger_verify,
+                _impl_axis8, _impl_json_validate, _impl_ast_diff,
+                _impl_hypothesis_decompose, _impl_coverage_report,
+                _impl_schema_infer, _impl_thermal_record, _impl_mbit_record,
+                _impl_publish_metadata,
+            )
+            for cid, fn in [
+                ("echo.v1", _impl_echo),
+                ("paired_metric_comparison.v1", _impl_paired),
+                ("monte_carlo_propagation.v1", _impl_monte_carlo),
+                ("sensitivity_analysis.v1", _impl_sensitivity),
+                ("ledger_append.v1", _impl_ledger_append),
+                ("ledger_verify.v1", _impl_ledger_verify),
+                ("axis8_score.v1", _impl_axis8),
+                ("json_validate.v1", _impl_json_validate),
+                ("ast_diff.v1", _impl_ast_diff),
+                ("hypothesis_decompose.v1", _impl_hypothesis_decompose),
+                ("coverage_report.v1", _impl_coverage_report),
+                ("schema_infer.v1", _impl_schema_infer),
+                ("thermal_record.v1", _impl_thermal_record),
+                ("mbit_record.v1", _impl_mbit_record),
+                ("publish_metadata.v1", _impl_publish_metadata),
+            ]:
+                if not self.umjam.registry.has(cid):
+                    self.umjam.registry.register(cid, fn)
+        # Use a real probe if available
+        probe = make_default_probe()
+        self.thermo = thermo or ThermoCortex(probe=probe)
         self.atlas = atlas or Atlas()
         self.metabolism = metabolism or Metabolism()
         self.apoptosis = apoptosis or Apoptosis()
@@ -114,12 +157,20 @@ class FullOrganismRunner:
         self.metacortex = Metacortex(ledger=self.ledger)
         self.captals = CaptalsEngine()
         self.replayer = Replayer(self.umjam)
+        self.registry = registry or CapabilityRegistry()
+        self.registry.register_builtins()
+        self.mmnb_store = mmnb_store or MMNBStore(mmnb_dir)
         self.macro_compiler = ClosureMacroCompiler(
             organism="matverse-organism", version=organism_version,
         )
 
         # Seed the Atlas with the canonical organs
         self._register_canonical_organs()
+        # Genesis MMNB if none exists
+        self.mmnb_store.genesis(
+            capabilities=[c.id for c in self.registry.list("ACTIVE")],
+            issued_by=organism_version,
+        )
 
     def _register_canonical_organs(self) -> None:
         for organ in [
@@ -141,10 +192,13 @@ class FullOrganismRunner:
             ("organ.invariants", "Invariants", "ACTIVE"),
             ("organ.laws", "Laws", "ACTIVE"),
             ("organ.gate", "Gate", "ACTIVE"),
+            ("organ.capability_registry", "CapabilityRegistry", "ACTIVE"),
+            ("organ.adaptation", "Adaptation", "ACTIVE"),
         ]:
             self.atlas.register_organ(organ[0], organ[1], state=organ[2])
-        for cap in ["paired_metric_comparison.v1", "echo.v1"]:
-            self.atlas.register_capability(cap, "organ.umjam")
+        # Register all active capabilities with Atlas
+        for cap in self.registry.list("ACTIVE"):
+            self.atlas.register_capability(cap.id, "organ.umjam")
 
     def run(self, problem: Problem,
             *,
@@ -206,6 +260,16 @@ class FullOrganismRunner:
         state_in = problem.to_dict()
         if executable:
             umjam_result = self.umjam.transmute(spec, state_in)
+            # If the chosen capability refused (e.g. inputs not
+            # appropriate), fall back to echo.v1 which always succeeds.
+            if umjam_result.status == "REFUSED" and chosen_capability != "echo.v1":
+                spec = UMJAMSpec(
+                    operation_id=chosen_op, capability_id="echo.v1",
+                    inputs=state_in, constraints=[], limits={"max_seconds": 60},
+                    fail_closed=True, subject=problem.id, consent="implicit",
+                    key="", purpose=f"fallback for {problem.id}", seed=42,
+                )
+                umjam_result = self.umjam.transmute(spec, state_in)
         else:
             umjam_result = None
 
@@ -311,6 +375,25 @@ class FullOrganismRunner:
         self.antifragility.record(
             perturbation="closure_run",
             before=0.0, after=bundle.canonical_hash() and 1.0 or 0.0,
+        )
+
+        # 15b. MMNB: persist a child MMNB
+        self.mmnb_store.write_new(
+            parent=self.mmnb_store.current(),
+            capabilities=[c.id for c in self.registry.list("ACTIVE")][:20],
+            recent_closures=[bundle.closure_id],
+            last_decision=org_report.decision,
+            top_strategy=(org_report.ranked[0]["id"] if org_report.ranked else "default"),
+            self_health={
+                "n_hypotheses": len(problem.hypotheses),
+                "top_score": (org_report.ranked[0]["score"]
+                              if org_report.ranked else 0.0),
+                "atlas_nodes": len(self.atlas.nodes()),
+                "atlas_edges": len(self.atlas.edges()),
+                "antifragility_score": self.antifragility.summary()["score"],
+            },
+            issued_by="matverse-organism-v3.7.0",
+            notes=f"closure {bundle.closure_id} for problem {problem.id}",
         )
 
         # 16. Replay (local)

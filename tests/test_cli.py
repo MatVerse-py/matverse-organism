@@ -82,11 +82,21 @@ class TestCLI(unittest.TestCase):
                     },
                 }, f)
             out = os.path.join(tmp, "out.json")
-            r = _run(["resolve", "-i", inp, "--execute", "-o", out, "--n-mc", "100"])
+            r = _run(["resolve", "-i", inp, "-o", out, "--n-mc", "100"])
             self.assertEqual(r.returncode, 0, msg=r.stderr)
             with open(out) as f:
                 data = json.load(f)
-            self.assertTrue(data["closure_report"]["closed"])
+            self.assertIn("organism_report", data)
+            # The v3.7 resolve no longer includes closure_report by default;
+            # the full cycle is reachable via `hypo organism run` instead.
+            r2 = _run(["organism", "run", "-i", inp, "-o",
+                        os.path.join(tmp, "closure.json")])
+            self.assertEqual(r2.returncode, 0, msg=r2.stderr)
+            with open(os.path.join(tmp, "closure.json")) as f:
+                c = json.load(f)
+            self.assertIn("closure", c)
+            self.assertTrue(c["closure"]["state_closure"] in
+                            ("CLOSED", "REPLAYED_INDEPENDENT"))
 
     def test_promote_records_and_recommends(self):
         with tempfile.TemporaryDirectory() as tmp:

@@ -1,0 +1,49 @@
+{
+  "id": "MMNB-0009-6a56f423",
+  "parent_id": "MMNB-0008-6a56f422",
+  "lineage": [
+    "MMNB-0000-6a56f3ca",
+    "MMNB-0001-6a56f3cf",
+    "MMNB-0002-6a56f3d3",
+    "MMNB-0003-6a56f3dc",
+    "MMNB-0004-6a56f3e1",
+    "MMNB-0005-6a56f3e5",
+    "MMNB-0006-6a56f419",
+    "MMNB-0007-6a56f41e",
+    "MMNB-0008-6a56f422"
+  ],
+  "generation": 9,
+  "capabilities": [
+    "ast_diff.v1",
+    "axis8_score.v1",
+    "coverage_report.v1",
+    "echo.v1",
+    "hypothesis_decompose.v1",
+    "json_validate.v1",
+    "ledger_append.v1",
+    "ledger_verify.v1",
+    "mbit_record.v1",
+    "monte_carlo_propagation.v1",
+    "paired_metric_comparison.v1",
+    "publish_metadata.v1",
+    "schema_infer.v1",
+    "sensitivity_analysis.v1",
+    "thermal_record.v1"
+  ],
+  "recent_closures": [
+    "MV-CLOSURE-40FA0B7545F8"
+  ],
+  "last_decision": "HOLD_ACTION",
+  "top_strategy": "H_OFFLINE",
+  "self_health": {
+    "n_hypotheses": 2,
+    "top_score": 0.9131,
+    "atlas_nodes": 38,
+    "atlas_edges": 18,
+    "antifragility_score": 0.0
+  },
+  "issued_at": 1784083491,
+  "issued_by": "matverse-organism-v3.7.0",
+  "notes": "closure MV-CLOSURE-40FA0B7545F8 for problem P_RUN",
+  "hash": "fb9ff81a077c9c9e3b5f0165fa7a275994d9241989fc481f26cb981972a6db2b"
+}
