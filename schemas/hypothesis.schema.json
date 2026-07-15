@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/MatVerse-py/matverse-organism/schemas/hypothesis.schema.json",
+  "title": "Hypothesis",
+  "description": "A falsifiable claim with evidence, cost, and risk.",
+  "type": "object",
+  "required": ["id", "claim", "falsification_criteria"],
+  "properties": {
+    "id":                    {"type": "string"},
+    "claim":                 {"type": "string", "minLength": 1},
+    "variables": {
+      "type": "object",
+      "additionalProperties": {"type": "number"}
+    },
+    "evidence_for":          {"type": "array",  "items": {"type": "string"}},
+    "evidence_against":      {"type": "array",  "items": {"type": "string"}},
+    "falsification_criteria":{"type": "string", "minLength": 1},
+    "test_method":           {"type": "string", "enum": ["monte_carlo", "unit_test", "human_trial"]},
+    "cost_estimate":         {"type": "number", "minimum": 0},
+    "expected_value":        {"type": "number"},
+    "risk":                  {"type": "number", "minimum": 0, "maximum": 1},
+    "reversibility":         {"type": "number", "minimum": 0, "maximum": 1},
+    "status":                {"type": "string"},
+    "lineage":               {"type": "array",  "items": {"type": "string"}},
+    "metadata":              {"type": "object", "additionalProperties": true}
+  }
+}

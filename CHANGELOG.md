@@ -1,0 +1,135 @@
+# Changelog
+
+All notable changes to the MatVerse Organism are documented here.
+The format follows [Keep a Changelog](https://keepachangelog.com/).
+The project adheres to [Semantic Versioning](https://semver.org/).
+
+## [3.0.0] - 2026-07-14
+
+### Added — Release v3.0.0 "HypothesisOps wedge"
+
+The integrative cognitive layer of the MatVerse ecosystem. This release
+turns the v2.0.0 single-organ skill into a complete eight-plus-one organ
+organism, with a CLI wedge that can land on a GitHub PR today.
+
+#### Campo de Hipóteses (carried from v2.0.0, hardened)
+- Deterministic Monte Carlo with explicit seed, P10/P50/P90, mean, std.
+- CVaR(α=0.10) — expected value in the worst 10% of cases.
+- Local one-at-a-time sensitivity, sorted by |Δ|.
+- 8 Leis Constitucionais (phenomenon, experiment, science, contract,
+  value, safety, heritage, ecosystem).
+- 8 AXIS-8 lenses (TRUTHMODE, REDTEAM, UNLEARN, 80/20, HORMOZI,
+  FUTUREYOU, /human, H-Axis).
+- Fail-closed decision: `TEST_NEXT`, `HUMAN_REVIEW_CANDIDATE`,
+  `HOLD_ACTION`, `REFUTED_PRESERVED`, `PROHIBITED_ACTION`, ...
+- 46/46 unit tests pass (>= 22 required).
+
+#### URANO Metabolic Runtime (new)
+- `matverse.urano.URANO.compile(problem, hypothesis)` returns an
+  `ExperimentContract` with executor mode, network policy, timeout,
+  acceptance criteria, risk blast radius, reversibility, rollback.
+- `matverse.urano.URANO.run(contract)` executes in a local sandbox,
+  appends a Receipt, returns an `ExperimentResult`.
+- No external side-effects: `network="denied"` is the default.
+
+#### Closure Compiler (new)
+- `matverse.closure.ClosureCompiler.run_full_cycle(problem)` verifies
+  that a complete cognitive cycle (investigate → compile → run → receipt)
+  has been executed. Returns `closed=True` only when all four steps
+  recorded receipts in the same ledger.
+
+#### Metacortex (new — level-3 learning)
+- `matverse.metacortex.Metacortex.record(LearningRecord)` ingests a record.
+- `Metacortex.profile_by_class()` aggregates per problem class.
+- `Metacortex.recommend("CLI_adoption")` returns the
+  `ClassProfile` with the strategy that has the best (pass_rate ×
+  (1 − calibration_error)) score.
+- Confidence grows with sample size and dominance.
+
+#### Ledger (carried + extended)
+- `kind`, `status`, and `timestamp` are now part of the chain hash.
+- Tampering with any of those fields is detected by `Ledger.verify()`.
+
+#### HypothesisOps CLI (new — the wedge)
+- `hypo init --objective ... --n-hypotheses N` — bootstrap a problem file.
+- `hypo resolve -i problem.json [--execute]` — run the organism
+  (optionally the full cycle with URANO + Closure).
+- `hypo promote --problem-class ... --strategy ...` — feed the
+  Metacortex and read its recommendation.
+- All three commands have integration tests (subprocess-based).
+
+#### Schema (new, machine-readable)
+- `schemas/problem.schema.json` — Problem contract.
+- `schemas/hypothesis.schema.json` — Hypothesis contract.
+- `schemas/experiment.schema.json` — ExperimentContract contract.
+- `schemas/learning_record.schema.json` — LearningRecord contract.
+
+#### MMNB seed (new)
+- `mmnb_seed.json` declares the v3 starting state: 686 cells, 8
+  capabilities, 3 axioms, phi constant 0.6180339887.
+- `matverse.seeds.fingerprint(seed)` is its stable identity anchor.
+
+#### Examples and validation
+- `examples/cli_adoption.json` — three-hypothesis CLI adoption problem.
+- `examples/h_offline.json` — single-hypothesis PRNG-determinism check.
+- `validation/report.json` — output of the bundled example (full cycle).
+- `validation/ledger.json` — hash-chained receipts.
+- `validation/metacortex_recommendation.json` — Metacortex output.
+
+#### Documentation
+- `SKILL.md` — full contract (when to use, when not, API, examples).
+- `README.md` — landing page.
+- `LICENSE` — Apache 2.0.
+- `pyproject.toml` — package metadata, `hypo` console script.
+- `CITATION.cff` — Zenodo/GitHub-native citation.
+- `references/architecture.md` — 8+1 organs model.
+- `references/canonical_laws.md` — 8 Constitutional Laws explained.
+- `references/limits.md` — what the organism cannot do.
+- `references/product_strategy.md` — HypothesisOps positioning.
+- `lineage/v2.0.0/` — preserved v2.0.0 source for the historical record.
+
+### Changed (relative to v2.0.0)
+- The skill is now installable as a Python package (`pip install -e .`)
+  and exposes a `hypo` console script.
+- The Organism's ranking function now normalises `information_gain`
+  to [0, 1] so that a high-EV hypothesis cannot dominate safer ones.
+- The 8 Constitutional Laws are evaluated deterministically against the
+  Problem's `metadata` and Hypothesis list; no manual or external
+  configuration is required.
+- The Ledger's `verify()` returns `ok=True` only when the full chain
+  (input + output + kind + status + timestamp) recomputes identically.
+
+### Removed
+- "Resolves any problem" framing. Replaced with a strict problem
+  classifier that returns explicit `PROHIBITED_ACTION`,
+  `PHYSICALLY_INFEASIBLE`, `OUT_OF_SCOPE`, `UNDECIDABLE_CANDIDATE`,
+  `INTRACTABLE` states and refuses to proceed.
+- Auto-execution of external side-effects. The system is `fail-closed`:
+  effects are gated behind `HUMAN_REVIEW_CANDIDATE` and explicit
+  ExperimentContract acceptance.
+
+### Validation status
+- `Compilação Python`:          PASS
+- `Testes automatizados`:       46/46 PASS
+- `Execução do exemplo`:        PASS (decision=HOLD, closure=closed)
+- `Monte Carlo determinístico`: PASS (seed=42 reproduzível)
+- `NaN / infinito`:             REJECTED
+- `Ledger hash-encadeado`:      PASS
+- `Detecção de adulteração`:    PASS
+- `Validação externa`:          NOT_PERFORMED
+
+## [2.0.0] - 2026-07-07
+
+### Added
+- Campo de Hipóteses (single-organ skill, Python stdlib only).
+- 8 Constitutional Laws and 8 AXIS-8 lenses.
+- Hash-chained Ledger.
+- 11/11 unit tests, SHA-256 `e70524eef98b2f7712023ed47320ed612668d830b85855e9f4eddaf212e2fdad`.
+
+### Preserved in `lineage/v2.0.0/`
+The v2.0.0 source, schema, and tests remain in this repository under
+`lineage/v2.0.0/`. They are not executed by v3.0.0 but remain a faithful
+historical record of the previous organ's structure and tests.
+
+[3.0.0]: #300---2026-07-14
+[2.0.0]: #200---2026-07-07
