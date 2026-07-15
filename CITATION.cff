@@ -4,7 +4,7 @@ message: |
   The corresponding author is the MatVerse Builder.
 title: "MatVerse Organism v3.7.0: The Eight-Plus-One Organs of an Auditable Cognitive Operating System"
 type: software
-version: 3.8.0
+version: 3.8.1
 date-released: 2026-07-14
 license: Apache-2.0
 url: "https://github.com/MatVerse-py/matverse-organism"

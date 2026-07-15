@@ -1,4 +1,4 @@
-# MatVerse Organism v3.8.0
+# MatVerse Organism v3.8.1
 
 > *Um sistema de engenharia de problemas que recebe uma questão complexa, estrutura hipóteses concorrentes, identifica o próximo teste de maior valor informacional e preserva todo o raciocínio em relatório verificável.*
 

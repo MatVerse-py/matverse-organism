@@ -119,7 +119,7 @@ from .canonical import (
     ConstitutionalState, next_organ,
 )
 
-__version__ = "3.8.0"
+__version__ = "3.8.1"
 __sha256_seed__ = "v3.8-seed-2026-07-15"
 
 __all__ = [
