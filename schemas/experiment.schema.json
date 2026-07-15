@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/MatVerse-py/matverse-organism/schemas/experiment.schema.json",
+  "title": "ExperimentContract",
+  "description": "URANO contract that turns a hypothesis into an executable experiment.",
+  "type": "object",
+  "required": ["experiment_id", "problem_id", "hypothesis_id", "claim", "falsification_condition"],
+  "properties": {
+    "experiment_id":         {"type": "string"},
+    "problem_id":            {"type": "string"},
+    "hypothesis_id":         {"type": "string"},
+    "claim":                 {"type": "string"},
+    "falsification_condition":{"type": "string"},
+    "inputs":                {"type": "object"},
+    "capabilities":          {"type": "array", "items": {"type": "string"}},
+    "executor_mode":         {"type": "string", "enum": ["local_sandbox", "monte_carlo", "human_trial"]},
+    "timeout_seconds":       {"type": "integer", "minimum": 1},
+    "network":               {"type": "string", "enum": ["denied", "readonly", "open"]},
+    "metrics":               {"type": "array", "items": {"type": "string"}},
+    "acceptance":            {"type": "object", "additionalProperties": {"type": "string"}},
+    "risk_blast_radius":     {"type": "string"},
+    "reversibility":         {"type": "string"},
+    "rollback":              {"type": "string"},
+    "human_owner":           {"type": "string"},
+    "seed":                  {"type": "integer"},
+    "metadata":              {"type": "object", "additionalProperties": true}
+  }
+}

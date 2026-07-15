@@ -1,0 +1,287 @@
+{
+  "organism_report": {
+    "problem_id": "P_CLI_ADOPTION",
+    "classification": "OPEN_FOR_INVESTIGATION",
+    "law_summary": {
+      "total": 8,
+      "holds": 7,
+      "missing": 0,
+      "failing": 1,
+      "coherence": 0.875,
+      "verdicts": [
+        {
+          "law_id": "LW1",
+          "name": "phenomenon_origin",
+          "holds": true,
+          "missing": false,
+          "notes": "objective names a phenomenon."
+        },
+        {
+          "law_id": "LW2",
+          "name": "experiment_link",
+          "holds": true,
+          "missing": false,
+          "notes": "experiment pathway present."
+        },
+        {
+          "law_id": "LW3",
+          "name": "science_origin",
+          "holds": true,
+          "missing": false,
+          "notes": "science_origin metadata present."
+        },
+        {
+          "law_id": "LW4",
+          "name": "contract",
+          "holds": true,
+          "missing": false,
+          "notes": "contract metadata present."
+        },
+        {
+          "law_id": "LW5",
+          "name": "product_value",
+          "holds": true,
+          "missing": false,
+          "notes": "stakeholders + expected_value present."
+        },
+        {
+          "law_id": "LW6",
+          "name": "service_safety",
+          "holds": false,
+          "missing": false,
+          "notes": "some hypothesis has irreversibility ≥ 0.5; require explicit rollback."
+        },
+        {
+          "law_id": "LW7",
+          "name": "heritage",
+          "holds": true,
+          "missing": false,
+          "notes": "lineage recorded."
+        },
+        {
+          "law_id": "LW8",
+          "name": "ecosystem_impact",
+          "holds": true,
+          "missing": false,
+          "notes": "ecosystem_impact declared."
+        }
+      ]
+    },
+    "ranked": [
+      {
+        "id": "H_OFFLINE",
+        "score": 0.9151,
+        "lenses": {
+          "TRUTHMODE": 1.0,
+          "REDTEAM": 0.7666666666666666,
+          "UNLEARN": 0.98,
+          "80/20": 1.0,
+          "HORMOZI": 1.0,
+          "FUTUREYOU": 0.99,
+          "/human": 0.8,
+          "H-Axis": 0.8
+        },
+        "info_gain": 23.75
+      },
+      {
+        "id": "H_NICHE",
+        "score": 0.8763,
+        "lenses": {
+          "TRUTHMODE": 1.0,
+          "REDTEAM": 0.7666666666666666,
+          "UNLEARN": 0.88,
+          "80/20": 1.0,
+          "HORMOZI": 1.0,
+          "FUTUREYOU": 0.955,
+          "/human": 0.7,
+          "H-Axis": 0.8
+        },
+        "info_gain": 11.667
+      },
+      {
+        "id": "H_PROMISE",
+        "score": 0.7431,
+        "lenses": {
+          "TRUTHMODE": 1.0,
+          "REDTEAM": 0.9999999999999998,
+          "UNLEARN": 0.72,
+          "80/20": 1.0,
+          "HORMOZI": 1.0,
+          "FUTUREYOU": 0.93,
+          "/human": 0.3,
+          "H-Axis": 0.8
+        },
+        "info_gain": 24.0
+      }
+    ],
+    "monte_carlo": {
+      "H_OFFLINE": {
+        "mean": 2.001142208509715,
+        "p10": 1.7393504467168954,
+        "p50": 2.0080189115538283,
+        "p90": 2.2640583430110155,
+        "std": 0.20454467341666185,
+        "min": 1.3105998020626517,
+        "max": 2.7666051865382415
+      },
+      "H_PROMISE": {
+        "mean": 5.0064229030046565,
+        "p10": 4.354817774604299,
+        "p50": 4.994603881301824,
+        "p90": 5.631815532462154,
+        "std": 0.4998598635562479,
+        "min": 3.3705024458856228,
+        "max": 6.813763203408099
+      },
+      "H_NICHE": {
+        "mean": 1.806519207417503,
+        "p10": 1.5675557150961357,
+        "p50": 1.8110072811399835,
+        "p90": 2.0398798467934935,
+        "std": 0.1818606996291012,
+        "min": 1.1853108955600882,
+        "max": 2.3764426068116213
+      }
+    },
+    "cvar": {
+      "H_OFFLINE": 1.6329,
+      "H_PROMISE": 4.1432,
+      "H_NICHE": 1.4884
+    },
+    "sensitivity": {
+      "H_OFFLINE": [
+        [
+          "adoption_uplift",
+          2.2,
+          0.1
+        ],
+        [
+          "adoption_uplift",
+          1.8,
+          -0.1
+        ],
+        [
+          "sigma",
+          0.33,
+          0.015
+        ],
+        [
+          "sigma",
+          0.27,
+          -0.015
+        ]
+      ],
+      "H_PROMISE": [
+        [
+          "adoption_uplift",
+          5.5,
+          0.25
+        ],
+        [
+          "adoption_uplift",
+          4.5,
+          -0.25
+        ],
+        [
+          "sigma",
+          0.88,
+          0.04
+        ],
+        [
+          "sigma",
+          0.72,
+          -0.04
+        ]
+      ],
+      "H_NICHE": [
+        [
+          "adoption_uplift",
+          1.98,
+          0.09
+        ],
+        [
+          "adoption_uplift",
+          1.62,
+          -0.09
+        ],
+        [
+          "sigma",
+          0.22,
+          0.01
+        ],
+        [
+          "sigma",
+          0.18,
+          -0.01
+        ]
+      ]
+    },
+    "threshold_prob": {
+      "H_OFFLINE": 0.0,
+      "H_PROMISE": 0.0,
+      "H_NICHE": 0.001
+    },
+    "decision": "HOLD_ACTION",
+    "next_test": {
+      "hypothesis_id": "H_OFFLINE",
+      "claim": "An offline-first CLI raises first-week downloads by at least 2x compared to the SaaS alternative",
+      "falsification_criteria": "adoption_uplift < 1.2",
+      "test_method": "monte_carlo",
+      "expected_value": 500.0,
+      "risk": 0.2,
+      "reversibility": 0.95
+    },
+    "receipt_hash": "e6c41d8b8ad0eb3b56fe8258c19565b9d0deae8b3527c39293a946dc83c24bda",
+    "seed": 20260714,
+    "n_monte_carlo": 2000
+  },
+  "closure_report": {
+    "problem_id": "P_CLI_ADOPTION",
+    "closed": true,
+    "steps": [
+      {
+        "step": "investigate",
+        "ok": true,
+        "classification": "OPEN_FOR_INVESTIGATION",
+        "decision": "HOLD_ACTION",
+        "n_hypotheses": 3
+      },
+      {
+        "step": "compile",
+        "ok": true,
+        "experiment_id": "EXP-1784078221-H_OFFLINE",
+        "executor_mode": "local_sandbox",
+        "network": "denied"
+      },
+      {
+        "step": "run",
+        "ok": true,
+        "experiment_id": "EXP-1784078221-H_OFFLINE",
+        "status": "REFUTED_PRESERVED",
+        "refuted": true,
+        "duration_s": 0.0033
+      }
+    ],
+    "missing": [],
+    "receipt_hash": "a7d50db6502f4a4acc9d34a5fa352feccc7ba32d71158caaa8e18ca3fc57d55e",
+    "decision": "HOLD_ACTION",
+    "final_observation": {
+      "n": 2000,
+      "summary": {
+        "mean": 1.0007007603791092,
+        "p10": 0.8725870826351494,
+        "p50": 0.9999805166536722,
+        "p90": 1.1299529593234732,
+        "std": 0.10066277043831552,
+        "min": 0.6374451495021658,
+        "max": 1.3389969162627486
+      },
+      "cvar10": 0.8261
+    }
+  },
+  "ledger_verification": {
+    "ok": true,
+    "length": 4,
+    "tip": "a7d50db6502f4a4acc9d34a5fa352feccc7ba32d71158caaa8e18ca3fc57d55e"
+  }
+}
