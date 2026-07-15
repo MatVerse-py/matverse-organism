@@ -1,3 +1,70 @@
+
+## [3.7.0] - 2026-07-14
+
+### Added — Release v3.7.0 "Cross-run organism"
+
+The organism now has real, persistent, cross-run capabilities. Where
+v3.6.0 had the eight-plus-one organs but each run was independent,
+v3.7.0 closes the cross-run feedback loops.
+
+#### New modules
+- `matverse.capability` — Contract-driven capability registry. 15
+  built-in capabilities (echo, paired-metric, monte-carlo,
+  sensitivity, ledger, axis8, json-validate, ast-diff, decompose,
+  coverage, schema-infer, thermal-record, mbit-record,
+  publish-metadata, plus paired-metric). Persistent to JSON. Supports
+  supersession and revocation. Implements the v3.7.0 contract
+  (inputs, outputs, cost, risk, permissions, tests, lineage).
+- `matverse.mmnb` — MMNB causal memory as a first-class persistent
+  object. Each MMNB has parent_id, lineage, generation, and
+  fingerprint hash. Tampering with the JSON file fails `verify()`.
+  The store is on disk, indexed by id and ordered by generation.
+- `matverse.adaptation` — Three adaptation loops:
+  - `AdaptationMetacortex` — the Metacortex now writes
+    recommended_strategy + weights to the MMNB.
+  - `ApoptosisScheduler` — retires capabilities whose failure rate
+    exceeds a threshold over a grace window.
+  - `AutopoiesisGenerator` — proposes a new capability from a gap,
+    validates it, and registers it.
+  - `CrossRunOrganism` — a new `Organism` subclass that consults
+    the Metacortex before ranking.
+- `matverse.probes` — Real hardware probes:
+  - `DeclaredProbe` (default)
+  - `RaplProbe` (Intel RAPL on Linux)
+  - `NvmlProbe` (NVIDIA via pynvml)
+  - `CompositeProbe`
+  - `make_default_probe()` returns RAPL if available, else Declared.
+
+#### Updated CLI
+The `hypo` command now exposes every organ:
+- `hypo organism run` — run the FullOrganismRunner
+- `hypo invariants check` — evaluate the 8 invariants
+- `hypo laws evaluate` — evaluate the 8 laws
+- `hypo cassandra interpret` — produce a Cassandra reading
+- `hypo svca replay` — re-run a SVCA's transmutation
+- `hypo atlas show/health` — the live atlas
+- `hypo thermo record/report` — thermodynamic accounting
+- `hypo captals record/report` — Captals engine
+- `hypo existential status` — existential processes
+- `hypo mmnb show/lineage` — MMNB causal memory
+- `hypo closure compile` — produce a closure bundle
+- `hypo publish prepare` — prepare platform metadata
+
+#### Infrastructure
+- `.github/workflows/ci.yml` — CI across Python 3.8–3.12 with smoke tests
+- `Dockerfile.v3` — multi-stage build (Go kernel + Python organ)
+- `tools/release.sh` — reproducible release script
+- `MANUAL.md` — operator manual
+- `references/{invariants,thermo,captals,existential,closure_macro}.md`
+
+#### Validation
+- Compilação Python:          PASS
+- Testes automatizados:       146/146 PASS (was 116 in v3.6.0)
+- MMNB cross-run chain:      4 generations tested
+- Capability registry:       15 ACTIVE builtins
+- All 4 platform pubs:       PREPARED_NOT_PUBLISHED (by design)
+- Pure stdlib:               yes (>= 3.8)
+
 # Changelog
 
 All notable changes to the MatVerse Organism are documented here.
