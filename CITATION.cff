@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: |
+  If you use this software in academic work, please cite it as below.
+  The corresponding author is the MatVerse Builder.
+title: "MatVerse Organism v3.7.0: The Eight-Plus-One Organs of an Auditable Cognitive Operating System"
+type: software
+version: 3.7.0
+date-released: 2026-07-14
+license: Apache-2.0
+url: "https://github.com/MatVerse-py/matverse-organism"
+repository-code: "https://github.com/MatVerse-py/matverse-organism"
+keywords:
+  - hypothesis
+  - decision-intelligence
+  - falsification
+  - monte-carlo
+  - metacortex
+  - hypothesisops
+  - audit
+authors:
+  - family-names: "Builder"
+    given-names: "MatVerse"
+    email: "builder@matverse.local"
+  - name: "MatVerse Contributors"
+references:
+  - type: software
+    title: "MatVerse Organism v2.0.0"
+    version: 2.0.0
+    date-released: 2026-07-07
+    url: "https://github.com/MatVerse-py/matverse-organism/tree/main/lineage/v2.0.0"

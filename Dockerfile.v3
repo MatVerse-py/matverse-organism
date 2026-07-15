@@ -1,0 +1,44 @@
+# Multi-stage Dockerfile for the MatVerse Organism v3.7.0
+# Stage 1: build the Go kernel (existing)
+FROM golang:1.21-alpine AS go-builder
+WORKDIR /app
+COPY matverse.kernel.go .
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o matverse.bin matverse.kernel.go
+
+# Stage 2: prepare the Python package (pure stdlib, but build is reproducible)
+FROM python:3.11-alpine AS python-builder
+WORKDIR /opt/matverse
+COPY matverse/ ./matverse/
+COPY schemas/ ./schemas/
+COPY pyproject.toml ./
+RUN pip install --no-cache-dir --prefix=/install .
+
+# Stage 3: runtime
+FROM alpine:latest
+WORKDIR /app
+
+# Go kernel
+COPY --from=go-builder /app/matverse.bin .
+COPY web/ ./web/
+
+# Python cognitive layer (v3.7.0)
+COPY --from=python-builder /install /usr/local
+COPY schemas/ /opt/matverse/schemas/
+COPY examples/ /opt/matverse/examples/
+COPY SKILL.md README.md CHANGELOG.md LICENSE mmnb_seed.json CITATION.cff /opt/matverse/
+COPY references/ /opt/matverse/references/
+COPY mmnb_seed.json /opt/matverse/
+
+# Python runtime
+RUN apk add --no-cache python3 py3-pip
+
+ENV PYTHONPATH=/usr/local/lib/python3.11/site-packages
+ENV MATVERSE_MMNB_DIR=/var/lib/matverse/mmnb
+
+RUN mkdir -p /var/lib/matverse/mmnb
+
+EXPOSE 8765
+
+# Default: start the Go kernel. The Python v3 organ is invoked via
+# `python -m matverse ...` from the operator's terminal.
+CMD ["./matverse.bin"]

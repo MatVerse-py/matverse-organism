@@ -1,0 +1,52 @@
+{
+  "recorded": {
+    "timestamp": 1784078221,
+    "problem_class": "CLI_adoption",
+    "strategy": "concrete_first",
+    "lenses_used": [
+      "TRUTHMODE",
+      "REDTEAM",
+      "80/20"
+    ],
+    "monte_carlo_n": 5000,
+    "seed": 0,
+    "outcome": "PASS",
+    "time_to_decision_s": 1.2,
+    "predicted_probability": 0.85,
+    "observed_outcome_value": 1.0
+  },
+  "metacortex_summary": {
+    "n_records": 1,
+    "n_classes": 1,
+    "classes": {
+      "CLI_adoption": {
+        "problem_class": "CLI_adoption",
+        "n_records": 1,
+        "strategies": {
+          "concrete_first": {
+            "n": 1.0,
+            "mean_calibration": 0.15,
+            "mean_time_s": 1.2,
+            "pass_rate": 1.0
+          }
+        },
+        "recommended_strategy": "concrete_first",
+        "recommendation_confidence": 0.0
+      }
+    }
+  },
+  "recommendation": {
+    "problem_class": "CLI_adoption",
+    "n_records": 1,
+    "strategies": {
+      "concrete_first": {
+        "n": 1.0,
+        "mean_calibration": 0.15,
+        "mean_time_s": 1.2,
+        "pass_rate": 1.0
+      }
+    },
+    "recommended_strategy": "concrete_first",
+    "recommendation_confidence": 0.0
+  }
+}
