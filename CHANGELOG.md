@@ -1,4 +1,52 @@
 
+## [3.8.0] - 2026-07-15
+
+### Added — Release v3.8.0 "GTHDL integration"
+
+The corpus canonizes three objects that v3.7.0 left out: the **formal
+MNB 5-tuple** `(e, Ψ, C, τ, h)`, the **GTHDL Hamiltonian** `dρ/dt = -i[Ĥ_Σ, ρ]`,
+and the **Riemannian Memory Manifold** `M = (O, R, g, Φ, ρ)`. v3.8.0
+implements all three and integrates them with the 12-organism cycle.
+
+#### New modules
+- `matverse.mnb_formal` — `FormalMNB` (5-tuple), `MNBState` (dynamic wrapper), `ThermodynamicGate` (Hamiltonian selector), `prune()` (informational pruning)
+- `matverse.hamiltonian` — `Hamiltonian`, `HamiltonianOperators`, `DensityOperator`, `GTHDLPropagator`, `commutator`, `evolve_rho`
+- `matverse.riemannian` — `MetricTensor`, `CurvatureTensor`, `RiemannianMemoryManifold`, `adjusted_cost_manifold`
+- `matverse.epistemic` — `EpistemicState` (8 states), `Dempster-Shafer` with conflict preservation, `Dung preferred extensions`, `IRC = 1 - H/log(2)`, `Ω-Gate evaluation`
+- `matverse.omega` — Normalized `Ω` score (5 dims, all in [0, 1])
+- `matverse.canonical` — 12-organism constitutional taxonomy + 3 constitutional-physics objects
+
+#### Bug fixes
+- **M-bit 5-vs-6 dim**: `MBit.geometric_score` is now the canonical 6-dim formula `(Q·R·T·V·E·H)^(1/6)·(1-risk)` with `evidence_strength` as the missing 6th dimension
+- **Dung admissibility**: added the `conflict-free` check (was missing — only self-defending was checked)
+- **IRC edge cases**: `irc(1.0, 0.0)` now returns exactly 1.0 (was 0.99999... due to log precision)
+- **`__init__.py` docstring**: now correctly says v3.8.0 (was lagging at v3.6.0)
+- **`references/architecture.md`**: rewritten to the 12-organs + 3-physics v3.8.0 model
+
+#### Constitutional cycle (12 organs)
+1. MMNB → 2. Cassandra/MetaCortex → 3. COG → 4. Invariants → 5. Laws →
+6. UMJAM → 7. SVCA → 8. Closure → 9. Atlas → 10. Thermo → 11. Captals →
+12. Existential → next MMNB
+
+The 3 constitutional physics (GTHDL, Riemannian, Epistemic) are not
+cycle steps — they are the laws under which every step operates.
+
+#### Validation
+- `python -m compileall`: PASS
+- `python -m unittest discover -s tests`: **253/253 PASS** (was 146/146 in v3.7.0, +107 new tests)
+- New test files: `test_mnb_formal.py`, `test_hamiltonian.py`, `test_riemannian.py`, `test_epistemic.py`, `test_omega.py`, `test_canonical.py`
+
+#### Out of scope (by design)
+- Public CAPT token issuance (HOLD on legal review)
+- Blockchain anchor (PREPARED_NOT_BROADCAST, requires human)
+- Zenodo / GitHub Release / Hugging Face (PREPARED, requires human)
+- Independent machine replay (requires second operator)
+- Riemannian 4-tensor full implementation: the 4-tensor is approximated via a sparse
+  dict to keep stdlib memory bounded; the canonical full Riemann tensor is HOLD
+  pending a numeric backend (numpy) — the sparse approximation is documented
+  and unit-tested.
+
+
 ## [3.7.0] - 2026-07-14
 
 ### Added — Release v3.7.0 "Cross-run organism"

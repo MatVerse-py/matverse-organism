@@ -60,6 +60,7 @@ def _mbit() -> MBit:
         work_id="W1", contributor="test",
         evidence_quality=0.9, reproducibility=1.0,
         utility=0.8, transferability=0.7, human_alignment=0.9,
+        evidence_strength=0.85,
     )
 
 

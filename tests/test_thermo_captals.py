@@ -82,7 +82,8 @@ class TestMBit(unittest.TestCase):
         m = MBit(work_id="W2", contributor="x",
                  compute_cost=0.5, evidence_quality=0.9,
                  reproducibility=1.0, utility=0.8,
-                 transferability=0.7, risk=0.0, human_alignment=0.95)
+                 transferability=0.7, risk=0.0, human_alignment=0.95,
+                 evidence_strength=0.9)
         self.assertGreater(m.geometric_score(), 0.0)
 
 
@@ -116,7 +117,8 @@ class TestCaptalsEngine(unittest.TestCase):
         e = CaptalsEngine()
         m = MBit(work_id="W", contributor="x",
                  evidence_quality=0.9, reproducibility=1.0,
-                 utility=0.8, transferability=0.7, human_alignment=0.9)
+                 utility=0.8, transferability=0.7, human_alignment=0.9,
+                 evidence_strength=0.85)
         e.record(m)
         self.assertEqual(m.status, "ADMISSIBLE_CONTRIBUTION")
 
@@ -124,10 +126,10 @@ class TestCaptalsEngine(unittest.TestCase):
         e = CaptalsEngine()
         m1 = MBit(work_id="W1", contributor="x", evidence_quality=0.9,
                   reproducibility=1.0, utility=0.9, transferability=0.9,
-                  human_alignment=0.9)
+                  human_alignment=0.9, evidence_strength=0.9)
         m2 = MBit(work_id="W2", contributor="x", evidence_quality=0.5,
                   reproducibility=0.5, utility=0.5, transferability=0.5,
-                  human_alignment=0.5)
+                  human_alignment=0.5, evidence_strength=0.5)
         e.record(m1); e.record(m2)
         rewards = e.reward(1000.0,
                            difficulty={"W1": 1.0, "W2": 1.0},

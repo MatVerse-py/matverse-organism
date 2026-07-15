@@ -97,21 +97,31 @@ class MBit:
     reproducibility: float = 0.0
     utility: float = 0.0
     transferability: float = 0.0
+    evidence_strength: float = 0.0   # E (NEW v3.8.0)
     risk: float = 0.0
     human_alignment: float = 0.0
     status: str = "DECLARED"           # DECLARED | ADMISSIBLE_CONTRIBUTION | REJECTED
     proofs: Dict[str, str] = field(default_factory=dict)   # PoSE, PoCT, PoTM, PoLE
 
     def geometric_score(self) -> float:
-        """Geometric mean of the six positive dimensions times (1 - CVaR-like risk)."""
+        """Canonical 6-dim geometric score.
+
+            score = (Q · R · T · V · E · H)^(1/6) · (1 − risk)
+
+        Where Q=evidence_quality, R=reproducibility, T=transferability,
+        V=utility, E=evidence_strength, H=human_alignment.
+
+        Any zero positive dimension forces score = 0 (constitutional gate
+        against volume-without-viability).
+        """
         dims = [self.evidence_quality, self.reproducibility, self.utility,
-                self.transferability, self.human_alignment]
+                self.transferability, self.evidence_strength, self.human_alignment]
         if any(d <= 0 for d in dims):
             return 0.0
         prod = 1.0
         for d in dims:
             prod *= d
-        return (prod ** (1.0 / len(dims))) * (1.0 - max(0.0, min(1.0, self.risk)))
+        return (prod ** (1.0 / 6.0)) * (1.0 - max(0.0, min(1.0, self.risk)))
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -122,6 +132,7 @@ class MBit:
             "reproducibility": round(self.reproducibility, 6),
             "utility": round(self.utility, 6),
             "transferability": round(self.transferability, 6),
+            "evidence_strength": round(self.evidence_strength, 6),
             "risk": round(self.risk, 6),
             "human_alignment": round(self.human_alignment, 6),
             "geometric_score": round(self.geometric_score(), 6),

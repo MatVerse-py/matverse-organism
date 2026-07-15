@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "matverse-organism"
-version = "3.7.0"
+version = "3.8.0"
 description = "A hypothesis field + metabolic runtime + metacortex for auditable problem engineering"
 readme = "README.md"
 license = {text = "Apache-2.0"}
