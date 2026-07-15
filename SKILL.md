@@ -1,11 +1,17 @@
-# MatVerse Organism v3.0.0
+# MatVerse Organism v3.6.0
 
 > *Um sistema de engenharia de problemas que recebe uma questão complexa, estrutura hipóteses concorrentes, identifica o próximo teste de maior valor informacional e preserva todo o raciocínio em relatório verificável.*
 
-[![version](https://img.shields.io/badge/version-3.0.0-blue.svg)]()
+[![version](https://img.shields.io/badge/version-3.6.0-blue.svg)]()
 [![python](https://img.shields.io/badge/python-3.8%2B-blue.svg)]()
 [![license](https://img.shields.io/badge/license-Apache%202.0-green.svg)]()
 [![dependencies](https://img.shields.io/badge/dependencies-stdlib--only-brightgreen.svg)]()
+
+v3.6.0 is the **eight-plus-one** release. It wires together the canonical
+anatomy: Hypothesis Field, Cassandra, UMJAM, SVCA, Atlas, ThermoCortex,
+Captals, Closure Macro Compiler, and the existential organs
+(Metabolism, Autopoiesis, Apoptosis, Antifragility, Homeostasis),
+governed by 8 Invariants and 8 versioned Laws.
 
 ---
 

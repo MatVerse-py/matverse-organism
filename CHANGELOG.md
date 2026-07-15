@@ -4,6 +4,66 @@ All notable changes to the MatVerse Organism are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/).
 The project adheres to [Semantic Versioning](https://semver.org/).
 
+## [3.6.0] - 2026-07-14
+
+### Added — Release v3.6.0 "Eight-plus-one organs"
+
+The integrative cognitive layer now has all the organs required by
+the canonical architecture, plus the existential processes that govern
+the lifecycle of those organs.
+
+#### New organs
+- **`matverse.invariants`** — 8 fail-closed constitutional invariants
+  (I1..I8). `InvariantViolation` halts the system.
+- **`matverse.cassandra`** — cognitive interpretation layer.
+  Produces a `CassandraReading` with competing claims, candidate
+  falsifiers, metacognitive notes, and a self-assessed confidence.
+- **`matverse.umjam`** — Universal MatVerse Joint of Admissible
+  Mutation. Pure capability registry, NaN-rejecting, refuse on error.
+- **`matverse.svca`** — S Vídeo-Cápsula de Aplicação. Proof capsule
+  bundling input, config, environment, execution, result, metrics,
+  hashes, receipt, and replay conditions.
+- **`matverse.atlas`** — live cartographic projection of the
+  organism: nodes, edges, kinds, states, lineage.
+- **`matverse.thermo`** — ThermoCortex + 8 thermodynamic laws.
+  Exergy, Carbon, PBR (Planetary Benefit Ratio), regenerative ratio.
+  Pluggable Probe (Declared by default; SENSOR/ATTESTED/INDEPENDENT
+  achievable by replacing the probe).
+- **`matverse.captals`** — Captals engine + M-bit + Proof Chain
+  (PoSE, PoCT, PoTM, PoLE) + Work Contract + LCU (LLM Compute Unit).
+  M-bit geometric score prevents rewarding volume without utility.
+- **`matverse.existential`** — Metabolism, Autopoiesis, Apoptosis,
+  Antifragility, Homeostasis. Each is a first-class process, not a
+  metaphor.
+- **`matverse.closure_macro`** — fractal closure compiler. 4 + 2
+  projections: Paper, Code, Execution, Canonization, Thermo,
+  Regenerative. Micro / Meso / Macro scales.
+- **`matverse.publishers`** — Zenodo, GitHub Release, Hugging Face,
+  Blockchain anchor metadata. **PREPARED_NOT_PUBLISHED only**; the
+  organism never publishes without an explicit human-authorized
+  external operation.
+- **`matverse.replay`** — independent replay verification. Advances
+  `replay_status` from `LOCAL_REPLAYED` to `INDEPENDENT_REPLAYED`.
+- **`matverse.runner`** — `FullOrganismRunner`, the canonical wiring
+  of all organs. Returns a `FullOrganismResult` with closure, SVCA,
+  Cassandra reading, organism report, publication set, replay report,
+  thermodynamic receipt, M-bit, and Atlas snapshot.
+
+#### Updated
+- `__init__.py` exports all 68 public symbols.
+- `urano.py` retained as a back-compat alias; the canonical organ is
+  now `umjam.UMJAM`.
+- 116 / 116 unit tests pass (was 46 / 46 in v3.0.0).
+- README, CHANGELOG, CITATION, SKILL updated.
+
+#### Validation
+- `Compilação Python`:            PASS
+- `Testes automatizados`:         116 / 116 PASS
+- `End-to-end closure (echo)`:    closure=REPLAYED_INDEPENDENT
+- `PBR demo (declared)`:          21.91
+- `Pure stdlib`:                  yes (>= 3.8)
+- `External publication`:         HOLD (PREPARED_NOT_PUBLISHED, by design)
+
 ## [3.0.0] - 2026-07-14
 
 ### Added — Release v3.0.0 "HypothesisOps wedge"
