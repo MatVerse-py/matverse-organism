@@ -511,3 +511,75 @@ li { margin: 2px 0; }
 .osx-dock-item.is-active { background: var(--accent-soft); border-color: var(--accent); }
 .osx-dock-sep { flex: 1; }
 .osx-dock-meta { font-family: var(--font-mono); font-size: 10px; color: var(--fg-2); }
+
+/* =================================================================
+   SymbiOS module — 5 new pages (intent / profiles / nodes /
+   evidence / sgi).  Plain CSS, no dependencies.
+   ================================================================= */
+.osx-tab-sep { color: var(--fg-2); font-size: 11px; padding: 0 4px; }
+
+.osx-view-intent .osx-intent-header h2,
+.osx-view-profiles .osx-pr-header h2,
+.osx-view-nodes .osx-nd-header h2,
+.osx-view-evidence .osx-ev-header h2,
+.osx-view-sgi .osx-sgi-header h2 { margin: 0 0 4px 0; font-size: 22px; }
+.osx-view-intent .osx-intent-header p,
+.osx-view-profiles .osx-pr-header p,
+.osx-view-nodes .osx-nd-header p,
+.osx-view-evidence .osx-ev-header p,
+.osx-view-sgi .osx-sgi-header p { color: var(--fg-2); margin: 0 0 12px 0; font-size: 13px; }
+
+.osx-intent-grid, .osx-pr-grid, .osx-nd-grid, .osx-ev-grid, .osx-sgi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 12px;
+  padding: 12px;
+}
+.osx-intent-grid article, .osx-pr-grid article, .osx-nd-grid article, .osx-ev-grid article, .osx-sgi-grid article {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+  min-height: 80px;
+}
+.osx-intent-grid h3, .osx-pr-grid h3, .osx-nd-grid h3, .osx-ev-grid h3, .osx-sgi-grid h3 {
+  margin: 0 0 6px 0; font-size: 13px; color: var(--accent); font-weight: 600;
+}
+.osx-intent-grid pre, .osx-pr-grid pre, .osx-nd-grid pre, .osx-ev-grid pre, .osx-sgi-grid pre {
+  font-family: var(--font-mono); font-size: 11px; color: var(--fg-0);
+  background: var(--bg-1); padding: 6px 8px; border-radius: 4px; overflow: auto;
+  margin: 0;
+}
+.osx-intent-grid ul, .osx-pr-grid ul, .osx-nd-grid ul, .osx-ev-grid ul, .osx-sgi-grid ul {
+  margin: 0; padding-left: 16px; font-size: 12px; color: var(--fg-0);
+}
+
+.osx-intent-tbl, .osx-pr-rbac, .osx-ev-tbl, .osx-sgi-tbl {
+  width: 100%; border-collapse: collapse; font-size: 11px; font-family: var(--font-mono);
+}
+.osx-intent-tbl th, .osx-pr-rbac th, .osx-ev-tbl th, .osx-sgi-tbl th {
+  text-align: left; background: var(--bg-1); padding: 4px 6px; border-bottom: 1px solid var(--line);
+  color: var(--accent); font-weight: 600;
+}
+.osx-intent-tbl td, .osx-pr-rbac td, .osx-ev-tbl td, .osx-sgi-tbl td {
+  padding: 4px 6px; border-bottom: 1px solid var(--line);
+}
+
+.osx-intent-new input, .osx-intent-new select { margin: 4px 6px 4px 0; padding: 4px 6px; background: var(--bg-1); color: var(--fg-0); border: 1px solid var(--line); border-radius: 4px; font-family: var(--font-mono); font-size: 11px; }
+.osx-intent-new button { margin: 4px 0; padding: 6px 10px; background: var(--accent); color: var(--bg-0); border: none; border-radius: 4px; cursor: pointer; font-family: var(--font-mono); font-size: 11px; }
+.osx-intent-new label { font-size: 11px; color: var(--fg-2); }
+
+.osx-nd-level { margin: 2px; padding: 4px 8px; background: var(--bg-1); color: var(--fg-0); border: 1px solid var(--line); border-radius: 4px; cursor: pointer; font-size: 11px; }
+.osx-nd-level.is-active { background: var(--accent); color: var(--bg-0); border-color: var(--accent); }
+
+.osx-nd-svg-wrap { background: var(--bg-1); border-top: 1px solid var(--line); padding: 12px; }
+.osx-nd-svg { width: 100%; height: 480px; display: block; }
+
+.osx-sgi-full { grid-column: 1 / -1; }
+.osx-sgi-tbl { font-size: 10px; }
+.osx-sgi-tbl .can-yes { color: #5fd2a4; font-weight: 600; }
+.osx-sgi-tbl .can-no  { color: #d97757; font-weight: 600; }
+.osx-sgi-tbl .label-yes { color: #d6c25a; font-weight: 600; }
+.osx-sgi-tbl .label-no  { color: var(--fg-2); }
+
+#osx-sgi-out { max-height: 360px; }

@@ -6,10 +6,16 @@
 | `osx-figure-lab.js`      | corpus (Cassandra Atlas Visual spec, SUBSTRATO)       | 7 deterministic SVG renderers (FREE_BODY, PLOT_2D, FLOWCHART, NETWORK_GRAPH, CONCEPT_MAP, TIMELINE, SYSTEM_ARCH) + Visual Ω-Gate |
 | `osx-canvas.js`          | corpus (Cognitive Canvas) + v0.2 kernel EpistemicState | 7 node shapes mapped to 8 epistemic states + select / add / connect / delete / export-JSON / import-JSON |
 | `osx-organism.js`        | matverse-organism v3.8.0 (FullOrganismRunner)         | in-browser mini-runner for the canonical v3.8.0 cycle (genesis MMNB → Cassandra → COG → invariants → UMJAM → SVCA → closure → thermo → Ω → new MMNB) |
-| `osx-app.js`             | corpus (SymbiOS Network Notebook, OSX view)           | top bar, dock, view switching, notebook renderers, Cassandra command bar |
+| `osx-app.js`             | corpus (SymbiOS Network Notebook, OSX view)           | top bar, dock, view switching, notebook renderers, Cassandra command bar, SymbiOS module renderers (intent / profiles / nodes / evidence / sgi) |
+| `osx-intent.js`          | corpus (Gerenciador de Intenções spec)                | Intent entity, 12-state FSM, 6 intent classes, decompose() for each class, 6 seeded intents including 1 ESCALATE |
+| `osx-profiles.js`        | corpus (Catálogo de Perfis spec)                      | 5 agent catalogs (32 skills), 8 AXIS-8 review skills, 5 RBAC roles + 13 permissions, 14 agents, capability grants, sessions, conversations, authz requests, audit events |
+| `osx-nodes.js`           | corpus (Mapa de Nós SymbiOS spec)                     | 15 node types + 15 relation types, SymbiOSNode + RelationEdge as first-class entities, 30+ seeded nodes / 40+ edges, 3 lenses + 3 navigation levels (macro/meso/micro), graph traversal (neighborsOf) |
+| `osx-evidence.js`        | corpus (Protocolos EvidenceOS spec)                   | 10 evidence states, Protocol/Decision/Receipt/Ledger/Replay entities, hash-chain ledger with verify() and tamper detection, verifyChain() across the full pipeline |
+| `osx-sgi.js`             | corpus (Relatório SGI Export spec)                    | 6 epistemic states with strict publish rules, 7 export formats (JSON / CSV / Markdown / OpenLineage / in-toto attestation), 8 sample metrics with full provenance, gateReport() |
 | `osx.css`                | corpus (3 planes: informational / digital / physical) | color tokens mirror the constitutional planes; view layout |
 | `index.html`             | corpus (SymbiOS Network Notebook layout, OSX-like chrome) | semantic structure + accessibility |
 | `tests/smoke.js`         | —                                                     | 29 assertions covering exports, renderers, organism demo |
+| `tests/smoke-symbios.js` | —                                                     | 99 assertions covering the SymbiOS module (intent / profiles / nodes / evidence / sgi) |
 
 ## What is **NOT** from v3.8.0
 

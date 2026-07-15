@@ -32,6 +32,12 @@
     <button class="osx-tab" data-view="atlas">Atlas</button>
     <button class="osx-tab" data-view="registry">Registry</button>
     <button class="osx-tab" data-view="organism">Organism</button>
+    <span class="osx-tab-sep">·</span>
+    <button class="osx-tab" data-view="intent">Intenções</button>
+    <button class="osx-tab" data-view="profiles">Perfis</button>
+    <button class="osx-tab" data-view="nodes">Nós</button>
+    <button class="osx-tab" data-view="evidence">EvidenceOS</button>
+    <button class="osx-tab" data-view="sgi">SGI</button>
   </nav>
   <div class="osx-topbar-right">
     <span class="osx-omega" title="Omega Score (constitutional viability)">Ω <b id="osx-omega-value">0.81</b></span>
@@ -249,6 +255,199 @@
     </div>
   </section>
 
+  <!-- ===========  INTENT (Page 1 of 5) =========== -->
+  <section class="osx-view osx-view-intent" data-view="intent" aria-label="Gerenciador de Intenções">
+    <header class="osx-intent-header">
+      <h2>Gerenciador de Intenções</h2>
+      <p>Entrada do fluxo causal. Toda linguagem humana vira Intent aqui. A página DECOMPÕE, ROTEIA, ESCALONA — não executa.</p>
+    </header>
+    <div class="osx-intent-grid">
+      <article class="osx-intent-fsm">
+        <h3>Máquina de estados · 12 estados canônicos</h3>
+        <pre id="osx-intent-fsm"></pre>
+      </article>
+      <article class="osx-intent-table">
+        <h3>Intenções seed (6)</h3>
+        <table class="osx-intent-tbl">
+          <thead><tr><th>id</th><th>classe</th><th>statement</th><th>risk</th><th>external</th><th>state</th></tr></thead>
+          <tbody id="osx-intent-tbody"></tbody>
+        </table>
+      </article>
+      <article class="osx-intent-summary">
+        <h3>Resumo</h3>
+        <pre id="osx-intent-summary"></pre>
+      </article>
+      <article class="osx-intent-new">
+        <h3>Nova intenção</h3>
+        <input id="osx-intent-stmt" placeholder="ex: 'analise o corpus e construa um experimento'" />
+        <select id="osx-intent-class">
+          <option>RESEARCH_AND_ENGINEERING</option>
+          <option>OBSERVATION_AND_LEDGER</option>
+          <option selected>EXECUTION_AND_DEPLOY</option>
+          <option>PUBLICATION_AND_PROOF</option>
+          <option>GOVERNANCE_AND_AUDIT</option>
+          <option>REPLAY_AND_RECONCILIATION</option>
+        </select>
+        <select id="osx-intent-risk">
+          <option>LOW</option><option selected>MEDIUM</option><option>HIGH</option><option>CRITICAL</option>
+        </select>
+        <label><input type="checkbox" id="osx-intent-external" /> external_effect</label>
+        <button id="osx-intent-route">rotear</button>
+        <pre id="osx-intent-new-out"></pre>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===========  PROFILES (Page 2 of 5) =========== -->
+  <section class="osx-view osx-view-profiles" data-view="profiles" aria-label="Catálogo de Perfis">
+    <header class="osx-pr-header">
+      <h2>Catálogo de Perfis</h2>
+      <p>Registry humano–agente–skill–capability para todo o MatVerse. User ≠ Agent, Agent ≠ Skill, Skill ≠ Capability, Capability ≠ Authorization.</p>
+    </header>
+    <div class="osx-pr-grid">
+      <article>
+        <h3>Catalogs (5 famílias)</h3>
+        <ul id="osx-pr-catalogs"></ul>
+      </article>
+      <article>
+        <h3>AXIS-8 (skills de revisão)</h3>
+        <ul id="osx-pr-axis8"></ul>
+      </article>
+      <article>
+        <h3>RBAC</h3>
+        <table class="osx-pr-rbac">
+          <thead><tr><th>role</th><th>permissions</th></tr></thead>
+          <tbody id="osx-pr-rbac-tbody"></tbody>
+        </table>
+      </article>
+      <article>
+        <h3>Agents (por status)</h3>
+        <ul id="osx-pr-agents"></ul>
+      </article>
+      <article>
+        <h3>Capability grants ativos</h3>
+        <ul id="osx-pr-grants"></ul>
+      </article>
+      <article>
+        <h3>Audit (append-only)</h3>
+        <ul id="osx-pr-audit"></ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===========  NODES (Page 3 of 5) =========== -->
+  <section class="osx-view osx-view-nodes" data-view="nodes" aria-label="Mapa de Nós SymbiOS">
+    <header class="osx-nd-header">
+      <h2>Mapa de Nós SymbiOS</h2>
+      <p>Grafo real: <b>SymbiOSNode</b> + <b>RelationEdge</b>. Três lentes (informacional / digital / física) e três níveis (macro / meso / micro).</p>
+    </header>
+    <div class="osx-nd-grid">
+      <article>
+        <h3>15 tipos de nó</h3>
+        <ul id="osx-nd-types"></ul>
+      </article>
+      <article>
+        <h3>15 tipos de relação</h3>
+        <ul id="osx-nd-rels"></ul>
+      </article>
+      <article>
+        <h3>Lentes</h3>
+        <ul id="osx-nd-lenses"></ul>
+      </article>
+      <article>
+        <h3>Navegação</h3>
+        <button class="osx-nd-level" data-level="macro">macro (2)</button>
+        <button class="osx-nd-level" data-level="meso">meso (7)</button>
+        <button class="osx-nd-level" data-level="micro">micro (12)</button>
+        <pre id="osx-nd-level-out"></pre>
+      </article>
+      <article class="osx-nd-summary">
+        <h3>Resumo do grafo</h3>
+        <pre id="osx-nd-summary"></pre>
+      </article>
+    </div>
+    <div class="osx-nd-svg-wrap">
+      <svg id="osx-nd-svg" class="osx-nd-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500"></svg>
+    </div>
+  </section>
+
+  <!-- ===========  EVIDENCE (Page 4 of 5) =========== -->
+  <section class="osx-view osx-view-evidence" data-view="evidence" aria-label="Protocolos EvidenceOS">
+    <header class="osx-ev-header">
+      <h2>Protocolos EvidenceOS</h2>
+      <p>Ciclo: Intent → Policy → Ω-Gate → Decision → Execution → Observation → Receipt → Ledger → Replay → Witness. <i>Receipt ≠ verdade, Ledger ≠ validação científica, Replay ≠ witness externo.</i></p>
+    </header>
+    <div class="osx-ev-grid">
+      <article>
+        <h3>10 estados de evidência</h3>
+        <ul id="osx-ev-states"></ul>
+      </article>
+      <article>
+        <h3>Decisões seed</h3>
+        <table class="osx-ev-tbl">
+          <thead><tr><th>decision_id</th><th>policy</th><th>agent</th><th>capability</th><th>status</th></tr></thead>
+          <tbody id="osx-ev-decisions-tbody"></tbody>
+        </table>
+      </article>
+      <article>
+        <h3>Receipts (chain)</h3>
+        <table class="osx-ev-tbl">
+          <thead><tr><th>receipt_id</th><th>hash_in</th><th>hash_out</th><th>prev</th><th>replay</th><th>witness</th></tr></thead>
+          <tbody id="osx-ev-receipts-tbody"></tbody>
+        </table>
+      </article>
+      <article>
+        <h3>Ledger (hash chain)</h3>
+        <pre id="osx-ev-ledger"></pre>
+      </article>
+      <article>
+        <h3>Replays (não-witness)</h3>
+        <ul id="osx-ev-replays"></ul>
+      </article>
+      <article>
+        <h3>Verify chain</h3>
+        <pre id="osx-ev-verify"></pre>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===========  SGI (Page 5 of 5) =========== -->
+  <section class="osx-view osx-view-sgi" data-view="sgi" aria-label="Relatório SGI Export">
+    <header class="osx-sgi-header">
+      <h2>Relatório SGI · Export Governado</h2>
+      <p>Cada métrica declara: nome, fórmula, versão, fonte, período, método, evidência, incerteza, responsável. <b>Proveniência obrigatória.</b> PROPOSED, ESTIMATED e NOT_VALIDATED não aparecem como indicadores consolidados.</p>
+    </header>
+    <div class="osx-sgi-grid">
+      <article>
+        <h3>Gate · 6 estados epistêmicos</h3>
+        <ul id="osx-sgi-rules"></ul>
+      </article>
+      <article>
+        <h3>Summary</h3>
+        <pre id="osx-sgi-summary"></pre>
+      </article>
+      <article class="osx-sgi-full">
+        <h3>Métricas (com proveniência)</h3>
+        <table class="osx-sgi-tbl">
+          <thead><tr><th>id</th><th>nome</th><th>epistemic</th><th>valor</th><th>unidade</th><th>fonte</th><th>can_publish</th><th>must_label</th></tr></thead>
+          <tbody id="osx-sgi-tbody"></tbody>
+        </table>
+      </article>
+      <article>
+        <h3>Export</h3>
+        <select id="osx-sgi-fmt">
+          <option value="JSON">JSON</option>
+          <option value="CSV">CSV</option>
+          <option value="MARKDOWN">Markdown</option>
+          <option value="OPENLINEAGE">OpenLineage event</option>
+          <option value="INTOTO">in-toto attestation</option>
+        </select>
+        <button id="osx-sgi-export">exportar</button>
+        <pre id="osx-sgi-out"></pre>
+      </article>
+    </div>
+  </section>
+
 </main>
 
 <!-- ============================================================ -->
@@ -263,6 +462,12 @@
   <button class="osx-dock-item" data-view="registry" title="Registry">≡</button>
   <button class="osx-dock-item" data-view="organism" title="Organism">⏣</button>
   <span class="osx-dock-sep"></span>
+  <button class="osx-dock-item" data-view="intent"    title="Gerenciador de Intenções">→</button>
+  <button class="osx-dock-item" data-view="profiles"  title="Catálogo de Perfis">◬</button>
+  <button class="osx-dock-item" data-view="nodes"     title="Mapa de Nós SymbiOS">▣</button>
+  <button class="osx-dock-item" data-view="evidence"  title="Protocolos EvidenceOS">▦</button>
+  <button class="osx-dock-item" data-view="sgi"       title="Relatório SGI Export">⤓</button>
+  <span class="osx-dock-sep"></span>
   <span class="osx-dock-meta">MatVerse Organism v3.8.0 · SymbiOS v0.1 · OFFLINE</span>
 </footer>
 
@@ -273,6 +478,11 @@
 <script src="osx-figure-lab.js"></script>
 <script src="osx-canvas.js"></script>
 <script src="osx-organism.js"></script>
+<script src="osx-intent.js"></script>
+<script src="osx-profiles.js"></script>
+<script src="osx-nodes.js"></script>
+<script src="osx-evidence.js"></script>
+<script src="osx-sgi.js"></script>
 <script src="osx-app.js"></script>
 </body>
 </html>

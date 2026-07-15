@@ -285,6 +285,326 @@ started_at: 2026-07-15T11:30:00Z</pre>`;
     });
   }
 
+  // ---------------------- SymbiOS module · 5 new pages ----------------------
+
+  function renderIntent() {
+    const I = global.OSX_INTENT;
+    if (!I) return;
+    // FSM (12 states + transitions)
+    const fsmLines = ["12 estados canônicos:"];
+    I.STATES.forEach((s) => {
+      const t = I.TRANSITIONS[s] || [];
+      fsmLines.push("  " + s + " → [" + t.join(", ") + "]");
+    });
+    document.getElementById("osx-intent-fsm").textContent = fsmLines.join("\n");
+
+    // Seed table
+    const tbody = document.getElementById("osx-intent-tbody");
+    tbody.innerHTML = "";
+    I.SAMPLE.forEach((it) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + it.intent_id + "</td>"
+        + "<td>" + it.intent_class + "</td>"
+        + "<td>" + (it.statement.length > 60 ? it.statement.slice(0, 60) + "…" : it.statement) + "</td>"
+        + "<td>" + it.risk + "</td>"
+        + "<td>" + (it.external_effect ? "yes" : "no") + "</td>"
+        + "<td><b>" + it.state + "</b></td>";
+      tbody.appendChild(tr);
+    });
+
+    // Summary
+    const sum = I.summary(I.SAMPLE);
+    const sumLines = [];
+    sumLines.push("total:        " + sum.total);
+    sumLines.push("active:       " + sum.active);
+    sumLines.push("blocked:      " + sum.blocked);
+    sumLines.push("terminal:     " + sum.terminal);
+    sumLines.push("");
+    sumLines.push("by_state:");
+    Object.keys(sum.by_state).forEach((k) => sumLines.push("  " + k.padEnd(26) + sum.by_state[k]));
+    document.getElementById("osx-intent-summary").textContent = sumLines.join("\n");
+
+    // New intent: route
+    document.getElementById("osx-intent-route").addEventListener("click", () => {
+      const stmt = document.getElementById("osx-intent-stmt").value.trim() || "(vazio)";
+      const cls = document.getElementById("osx-intent-class").value;
+      const risk = document.getElementById("osx-intent-risk").value;
+      const ext = document.getElementById("osx-intent-external").checked;
+      const it = I.newIntent({
+        statement: stmt, intent_class: cls, risk: risk, external_effect: ext,
+      });
+      // walk: RECEIVED → CLASSIFIED → DECOMPOSED → ROUTED
+      I.transition(it, "CLASSIFIED");
+      const dec = I.decompose(it);
+      I.transition(it, "DECOMPOSED");
+      I.transition(it, dec.routing === "WAITING_AUTHORIZATION" ? "WAITING_AUTHORIZATION" : "ROUTED");
+      const out = ["Intent criada: " + it.intent_id];
+      out.push("  classe:     " + it.intent_class);
+      out.push("  risk:       " + it.risk);
+      out.push("  external:   " + it.external_effect);
+      out.push("  state:      " + it.state);
+      out.push("  routing:    " + dec.routing);
+      out.push("  reason:     " + dec.reason);
+      out.push("  subtasks:");
+      dec.subtasks.forEach((s) => out.push("    - " + s.kind + " on " + s.target));
+      document.getElementById("osx-intent-new-out").textContent = out.join("\n");
+    });
+  }
+
+  function renderProfiles() {
+    const P = global.OSX_PROFILES;
+    if (!P) return;
+    // Catalogs
+    const cul = document.getElementById("osx-pr-catalogs");
+    cul.innerHTML = "";
+    Object.keys(P.CATALOGS).forEach((k) => {
+      const c = P.CATALOGS[k];
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + c.name + "</b> — " + c.role + " <i>(" + c.skills.length + " skills)</i>";
+      cul.appendChild(li);
+    });
+    // AXIS-8
+    const ax = document.getElementById("osx-pr-axis8");
+    ax.innerHTML = "";
+    P.AXIS_8.forEach((s) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<code>" + s.id + "</code> " + s.name + " — " + s.desc;
+      ax.appendChild(li);
+    });
+    // RBAC
+    const rt = document.getElementById("osx-pr-rbac-tbody");
+    rt.innerHTML = "";
+    P.ROLES.forEach((r) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + r.id + "</td><td>" + r.permissions.join(", ") + "</td>";
+      rt.appendChild(tr);
+    });
+    // Agents by status
+    const al = document.getElementById("osx-pr-agents");
+    al.innerHTML = "";
+    const sum = P.summary();
+    Object.keys(sum.by_status).forEach((s) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + s + "</b>: " + sum.by_status[s] + " agents";
+      al.appendChild(li);
+    });
+    P.AGENTS.forEach((a) => {
+      const li = document.createElement("li");
+      li.innerHTML = a.id + " <i>(" + a.catalog + " / " + a.skill + ")</i>";
+      al.appendChild(li);
+    });
+    // Grants
+    const gl = document.getElementById("osx-pr-grants");
+    gl.innerHTML = "";
+    P.GRANTS.forEach((g) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<code>" + g.id + "</code> " + g.agent_id + " → " + g.capability_id
+        + " (TTL " + g.ttl_seconds + "s, " + (P.isGrantValid(g) ? "valid" : "EXPIRED") + ")";
+      gl.appendChild(li);
+    });
+    // Audit
+    const au = document.getElementById("osx-pr-audit");
+    au.innerHTML = "";
+    P.AUDIT_EVENTS.forEach((e) => {
+      const li = document.createElement("li");
+      li.innerHTML = "[" + e.at + "] <b>" + e.actor + "</b> " + e.action + " → " + e.target;
+      au.appendChild(li);
+    });
+  }
+
+  function renderNodes() {
+    const N = global.OSX_NODES;
+    if (!N) return;
+    // Types
+    const tu = document.getElementById("osx-nd-types");
+    tu.innerHTML = "";
+    N.NODE_TYPES.forEach((t) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + t + "</b> <i>(" + N.LENS_OF[t] + ")</i>";
+      tu.appendChild(li);
+    });
+    // Relations
+    const ru = document.getElementById("osx-nd-rels");
+    ru.innerHTML = "";
+    N.RELATION_TYPES.forEach((r) => {
+      const li = document.createElement("li");
+      li.innerHTML = r;
+      ru.appendChild(li);
+    });
+    // Lenses
+    const lu = document.getElementById("osx-nd-lenses");
+    lu.innerHTML = "";
+    const sum = N.summary();
+    Object.keys(sum.by_lens).forEach((k) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + k + "</b>: " + sum.by_lens[k] + " nodes";
+      lu.appendChild(li);
+    });
+    // Summary
+    const sumLines = ["total_nodes: " + sum.total_nodes, "total_edges: " + sum.total_edges, ""];
+    sumLines.push("by_type:");
+    Object.keys(sum.by_type).forEach((k) => sumLines.push("  " + k.padEnd(20) + sum.by_type[k]));
+    sumLines.push("");
+    sumLines.push("edges_by_type:");
+    Object.keys(sum.edges_by_type).forEach((k) => sumLines.push("  " + k.padEnd(20) + sum.edges_by_type[k]));
+    document.getElementById("osx-nd-summary").textContent = sumLines.join("\n");
+    // Levels
+    document.querySelectorAll(".osx-nd-level").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".osx-nd-level").forEach((b) => b.classList.remove("is-active"));
+        btn.classList.add("is-active");
+        const level = btn.dataset.level;
+        const fn = N[level.toUpperCase()];
+        const nodes = fn();
+        const lines = [level.toUpperCase() + " navigation · " + nodes.length + " nodes", ""];
+        nodes.forEach((n) => lines.push("  " + n.node_id + "  " + n.type + "  " + n.label));
+        document.getElementById("osx-nd-level-out").textContent = lines.join("\n");
+      });
+    });
+    // SVG layout (deterministic: ring by lens)
+    drawNodesGraph();
+  }
+
+  function drawNodesGraph() {
+    const N = global.OSX_NODES;
+    if (!N) return;
+    const svg = document.getElementById("osx-nd-svg");
+    if (!svg) return;
+    // simple force-like layout: 3 concentric rings (informational / digital / physical)
+    const cx = 400, cy = 250;
+    const radii = { informational: 60, digital: 130, physical: 200 };
+    const positions = {};
+    const nodesByLens = { informational: [], digital: [], physical: [] };
+    N.NODES.forEach((n) => nodesByLens[n.lens].push(n));
+    Object.keys(nodesByLens).forEach((lens) => {
+      const list = nodesByLens[lens];
+      const r = radii[lens];
+      list.forEach((n, i) => {
+        const angle = (i / list.length) * 2 * Math.PI;
+        positions[n.node_id] = {
+          x: cx + r * Math.cos(angle),
+          y: cy + r * Math.sin(angle),
+          type: n.type, lens: n.lens, label: n.label,
+        };
+      });
+    });
+    // render
+    let html = "";
+    // edges first
+    N.EDGES.forEach((e) => {
+      const a = positions[e.source_id], b = positions[e.target_id];
+      if (!a || !b) return;
+      const color = e.type === "CONTRADICTS" ? "#c44b4b" : (e.type === "SUPERSEDES" ? "#5fd2a4" : "#7a8290");
+      html += '<line x1="' + a.x.toFixed(1) + '" y1="' + a.y.toFixed(1)
+        + '" x2="' + b.x.toFixed(1) + '" y2="' + b.y.toFixed(1)
+        + '" stroke="' + color + '" stroke-width="0.6" opacity="0.55" />';
+    });
+    // nodes
+    Object.keys(positions).forEach((id) => {
+      const p = positions[id];
+      const fill = p.lens === "informational" ? "#5fd2a4" : (p.lens === "digital" ? "#9b87f5" : "#d6c25a");
+      html += '<circle cx="' + p.x.toFixed(1) + '" cy="' + p.y.toFixed(1) + '" r="3.5" fill="' + fill + '" stroke="#0e0f12" stroke-width="0.6" />';
+    });
+    svg.innerHTML = html;
+  }
+
+  function renderEvidence() {
+    const E = global.OSX_EVIDENCE;
+    if (!E) return;
+    // 10 states
+    const ul = document.getElementById("osx-ev-states");
+    ul.innerHTML = "";
+    E.STATES.forEach((s) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + s + "</b>";
+      ul.appendChild(li);
+    });
+    // Decisions
+    const dt = document.getElementById("osx-ev-decisions-tbody");
+    dt.innerHTML = "";
+    E.SAMPLE_DECISIONS.forEach((d) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + d.decision_id + "</td><td>" + d.policy_id + "</td><td>" + d.agent_id + "</td><td>" + d.capability_id + "</td><td><b>" + d.status + "</b></td>";
+      dt.appendChild(tr);
+    });
+    // Receipts
+    const rt = document.getElementById("osx-ev-receipts-tbody");
+    rt.innerHTML = "";
+    E.SAMPLE_RECEIPTS.forEach((r) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + r.receipt_id + "</td><td>" + r.hash_in + "</td><td>" + (r.hash_out || "—") + "</td><td>" + (r.prev_receipt || "—") + "</td><td>" + r.replay_status + "</td><td>" + r.witness_status + "</td>";
+      rt.appendChild(tr);
+    });
+    // Ledger
+    const lLines = ["ledger_id: " + E.SAMPLE_LEDGER.ledger_id, "entries: " + E.SAMPLE_LEDGER.entries.length, "root_hash: " + E.SAMPLE_LEDGER.root_hash, "valid: " + E.SAMPLE_LEDGER.verify(), ""];
+    E.SAMPLE_LEDGER.entries.forEach((e) => {
+      lLines.push("  " + e.receipt_id + "  hash=" + e.hash + "  prev=" + e.prev_hash);
+    });
+    document.getElementById("osx-ev-ledger").textContent = lLines.join("\n");
+    // Replays
+    const rl = document.getElementById("osx-ev-replays");
+    rl.innerHTML = "";
+    E.SAMPLE_REPLAYS.forEach((r) => {
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + r.replay_id + "</b> on " + r.receipt_id + " → " + r.status + " (" + r.compared_with_original + ", witness=" + r.witness_status + ")";
+      rl.appendChild(li);
+    });
+    // Verify chain
+    const vLines = [];
+    E.SAMPLE_RECEIPTS.forEach((r) => {
+      const d = E.SAMPLE_DECISIONS.filter((x) => x.decision_id === r.decision_id)[0];
+      const rpls = E.SAMPLE_REPLAYS.filter((x) => x.receipt_id === r.receipt_id);
+      const v = E.verifyChain(d, r, E.SAMPLE_LEDGER, rpls);
+      vLines.push(r.receipt_id + ": " + v.verdict);
+    });
+    document.getElementById("osx-ev-verify").textContent = vLines.join("\n");
+  }
+
+  function renderSGI() {
+    const S = global.OSX_SGI;
+    if (!S) return;
+    // Rules
+    const ul = document.getElementById("osx-sgi-rules");
+    ul.innerHTML = "";
+    Object.keys(S.EXPORT_RULES).forEach((k) => {
+      const r = S.EXPORT_RULES[k];
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + k + "</b> — can_publish=" + r.can_publish + ", must_label=" + r.must_label + ", requires_attestation=" + r.requires_attestation;
+      ul.appendChild(li);
+    });
+    // Summary
+    const sum = S.summary();
+    const sLines = ["total:           " + sum.total, "publishable:     " + sum.publishable, "blocked:         " + sum.blocked, "formats:         " + sum.formats, "", "by_epistemic:"];
+    Object.keys(sum.by_epistemic).forEach((k) => sLines.push("  " + k.padEnd(16) + sum.by_epistemic[k]));
+    document.getElementById("osx-sgi-summary").textContent = sLines.join("\n");
+    // Table
+    const tb = document.getElementById("osx-sgi-tbody");
+    tb.innerHTML = "";
+    S.SAMPLE_METRICS.forEach((m) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<td>" + m.metric_id + "</td>"
+        + "<td>" + m.name + "</td>"
+        + "<td>" + m.epistemic + "</td>"
+        + "<td>" + (m.value === null ? "n/a" : m.value) + "</td>"
+        + "<td>" + m.unit + "</td>"
+        + "<td>" + (m.source.length > 40 ? m.source.slice(0, 40) + "…" : m.source) + "</td>"
+        + '<td class="' + (S.canPublish(m) ? "can-yes" : "can-no") + '">' + (S.canPublish(m) ? "YES" : "NO") + "</td>"
+        + '<td class="' + (S.mustLabel(m) ? "label-yes" : "label-no") + '">' + (S.mustLabel(m) ? "YES" : "no") + "</td>";
+      tb.appendChild(tr);
+    });
+    // Export button
+    document.getElementById("osx-sgi-export").addEventListener("click", () => {
+      const fmt = document.getElementById("osx-sgi-fmt").value;
+      let out = "";
+      if (fmt === "JSON")        out = S.toJSON();
+      else if (fmt === "CSV")    out = S.toCSV();
+      else if (fmt === "MARKDOWN") out = S.toMarkdown(S.publishable());
+      else if (fmt === "OPENLINEAGE") out = S.toOpenLineageEvent();
+      else if (fmt === "INTOTO") out = S.toInTotoAttestation();
+      document.getElementById("osx-sgi-out").textContent = out;
+    });
+  }
+
   // ---------------------- Init ----------------------
   function init() {
     bindNav();
@@ -297,6 +617,12 @@ started_at: 2026-07-15T11:30:00Z</pre>`;
     bindFigureLab();
     bindOrganism();
     global.OSX_CANVAS.init();
+    // SymbiOS module · 5 new pages
+    renderIntent();
+    renderProfiles();
+    renderNodes();
+    renderEvidence();
+    renderSGI();
     // initial omega display
     document.getElementById("osx-omega-value").textContent = global.OSX.omegaScore(0.92, 21.91, 4.0, 0.78, 0.85).toFixed(2);
   }

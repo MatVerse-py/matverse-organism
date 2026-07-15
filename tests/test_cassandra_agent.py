@@ -17,14 +17,23 @@ Covers:
   - CassandraAgent: full flow in standalone mode
   - Constitutional boundaries: NEVER authorizes external action
 """
+import json
 import os
 import sys
+import time
 import unittest
 from unittest.mock import MagicMock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from matverse.cassandra_agent import (
+    CASSANDRA_SYSTEM_PROMPT, CassandraAgent, CassandraRun, local_interpret,
+)
+from matverse.cassandra_base44 import (
+    Base44Client, Base44Error, SessionToken, CapabilityToken,
+    DEFAULT_APP_ID, API_KEY_ENV,
+)
+from matverse.cassandra_agent import (  # noqa: F811  (re-import for clarity)
     CASSANDRA_SYSTEM_PROMPT, ROLE, SCOPE, ADMISSIBILITY,
     EPITEMIC, CANONICAL_CORPUS, local_interpret,
     Base44Client, Base44Error, CassandraAgent, CassandraRun,
@@ -150,32 +159,91 @@ class TestCassandraRun(unittest.TestCase):
 class TestBase44Client(unittest.TestCase):
     def test_unconfigured_returns_false(self):
         c = Base44Client(api_key="")
+        # No api_key and no session → not configured, not authenticated
         self.assertFalse(c.is_configured)
+        self.assertFalse(c.is_authenticated)
 
     def test_configured_with_env(self):
         with patch.dict(os.environ, {"BASE44_API_KEY": "fake-key-123"}):
             c = Base44Client()
+            # configured because the api_key is in memory at this point
             self.assertTrue(c.is_configured)
-            self.assertEqual(c.api_key, "fake-key-123")
+            # The key is held privately and is wiped after authenticate()
+            self.assertEqual(c._api_key, "fake-key-123")
 
     def test_unconfigured_request_raises(self):
         c = Base44Client(api_key="")
         with self.assertRaises(Base44Error):
             c.list_entities("SGIMetric")
 
-    def test_request_happy_path(self):
+    def test_authenticate_wipes_api_key(self):
+        """After authenticate(), the api_key is wiped from memory and
+        a SessionToken replaces it. This is the security invariant."""
         with patch.dict(os.environ, {"BASE44_API_KEY": "fake-key"}):
             c = Base44Client()
-            mock_response = MagicMock()
-            mock_response.read.return_value = b'[{"id":"r1","value":1}]'
-            mock_response.__enter__ = MagicMock(return_value=mock_response)
-            mock_response.__exit__ = MagicMock(return_value=False)
-            with patch("urllib.request.urlopen", return_value=mock_response):
+            self.assertEqual(c._api_key, "fake-key")
+            now = int(time.time())
+            payload = json.dumps({"token": "sess-1", "issued_at": now,
+                                  "ttl_seconds": 3600, "user_id": "u1"}).encode()
+            mock_resp = MagicMock()
+            mock_resp.read.return_value = payload
+            mock_resp.__enter__ = MagicMock(return_value=mock_resp)
+            mock_resp.__exit__ = MagicMock(return_value=False)
+            with patch("urllib.request.urlopen", return_value=mock_resp):
+                sess = c.authenticate()
+            # After authenticate, the key is gone
+            self.assertIsNone(c._api_key)
+            self.assertIsNotNone(c.session)
+            self.assertEqual(sess.token, "sess-1")
+            self.assertTrue(c.is_authenticated)
+
+    def test_request_happy_path_uses_bearer(self):
+        """Entity calls use the session bearer, not the api_key header."""
+        with patch.dict(os.environ, {"BASE44_API_KEY": "fake-key"}):
+            c = Base44Client()
+            now = int(time.time())
+            sess_payload = json.dumps({"token": "sess-1", "issued_at": now,
+                                       "ttl_seconds": 3600, "user_id": "u1"}).encode()
+            sess_resp = MagicMock()
+            sess_resp.read.return_value = sess_payload
+            sess_resp.__enter__ = MagicMock(return_value=sess_resp)
+            sess_resp.__exit__ = MagicMock(return_value=False)
+            with patch("urllib.request.urlopen", return_value=sess_resp):
+                c.authenticate()
+            # Now mock the entity call
+            list_resp = MagicMock()
+            list_resp.read.return_value = b'[{"id":"r1","value":1}]'
+            list_resp.__enter__ = MagicMock(return_value=list_resp)
+            list_resp.__exit__ = MagicMock(return_value=False)
+            captured_headers = {}
+            def fake_urlopen(req, **kw):
+                captured_headers.update(dict(req.headers))
+                return list_resp
+            with patch("urllib.request.urlopen", side_effect=fake_urlopen):
                 out = c.list_entities("SGIMetric")
-                self.assertEqual(out, [{"id": "r1", "value": 1}])
+            self.assertEqual(out, [{"id": "r1", "value": 1}])
+            self.assertNotIn("fake-key", str(captured_headers))
+            self.assertIn("Bearer sess-1", captured_headers.get("Authorization", ""))
 
     def test_default_app_id(self):
         self.assertEqual(DEFAULT_APP_ID, "6a2dd76b300afd3eb43293d7")
+
+    def test_session_token_expiry(self):
+        now = int(time.time())
+        s = SessionToken(token="t", issued_at=now - 100, ttl_seconds=60)
+        self.assertTrue(s.is_expired())
+        s2 = SessionToken(token="t", issued_at=now, ttl_seconds=3600)
+        self.assertFalse(s2.is_expired())
+
+    def test_capability_token_expiry(self):
+        now = int(time.time())
+        c = CapabilityToken(token="t", agent_id="a", skill_name="s",
+                            issued_at=now - 100, ttl_seconds=60)
+        self.assertTrue(c.is_expired())
+        c2 = CapabilityToken(token="t", agent_id="a", skill_name="s",
+                              issued_at=now, ttl_seconds=3600)
+        self.assertFalse(c2.is_expired())
+        self.assertEqual(c2.to_dict()["agent_id"], "a")
 
 
 class TestCassandraAgentStandalone(unittest.TestCase):

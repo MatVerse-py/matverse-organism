@@ -1,155 +1,155 @@
-# Cassandra ↔ Base44 integration guide
+# Cassandra ⇄ Base44 — Security-First Integration (v3.8.2)
 
-This document records how the local Cassandra agent
-(`matverse.cassandra_agent`) connects to the Base44 app
-**MatVerse URANO OSX** (app id `6a2dd76b300afd3eb43293d7`).
+This document describes how the Cassandra agent (`matverse.cassandra_agent`)
+integrates with the Base44 app `6a2dd76b300afd3eb43293d7` (MatVerse URANO
+OSX). The integration follows the constitutional security model.
 
-## Two modes
+## Constitutional Security Model
 
-| Mode | What it does | Requires |
-|------|-------------|----------|
-| `STANDALONE` | Local rule-based interpreter, no network | nothing |
-| `BASE44_REMOTE` | Uses Base44 chat agent API (`/apps/{id}/agents/...`) | `BASE44_API_KEY` env var |
-| `HYBRID` | Local interpreter + Base44 entity persistence | `BASE44_API_KEY` env var |
+The agent must NEVER hold a permanent API key. The credential lifecycle is:
 
-The mode is auto-detected from the env var if you pass `mode="auto"`
-(the default).
-
-## Quick start
-
-### 1. Set the API key
-
-```bash
-export BASE44_API_KEY="<your base44 api key>"
-# The key is read from the env, never stored on disk.
+```
+┌────────────┐    bootstrap    ┌──────────────┐
+│  api_key   │ ──────────────► │  SessionToken │
+│  (in env)  │  POST /auth/    │  (time-limited)│
+└────────────┘   session       └──────┬────────┘
+       │                               │ Bearer
+       │ wiped from                    │
+       │ memory after                  ▼
+       │ bootstrap              ┌────────────────┐
+       ▼                        │  All other     │
+   (gone)                      │  calls         │
+                               └──────┬─────────┘
+                                      │ scope: agent+skill
+                                      ▼
+                               ┌────────────────┐
+                               │ CapabilityToken│
+                               │ (time-limited, │
+                               │  per agent+skill)│
+                               └────────────────┘
 ```
 
-You can find the key in Base44:
-**Dashboard → Settings → API keys**. The default `osx_chat` agent is
-already created in the MatVerse URANO OSX app.
+**Hard limits (encoded in `CASSANDRA_SYSTEM_PROMPT`):**
 
-### 2. Use the agent from Python
+1. `api_key` is read from `BASE44_API_KEY` env var ONLY at `__init__` time.
+2. It is exchanged for a `SessionToken` via `POST /auth/session` immediately.
+3. After `authenticate()`, the `api_key` attribute is set to `None` (wiped
+   from memory).
+4. All subsequent entity calls use `Authorization: Bearer <session_token>`.
+5. Agent conversations use `CapabilityToken` (scoped to `agent_id` +
+   `skill_name`, TTL = 10 min by default).
+6. The `api_key` is NEVER sent as a request header on any call other than
+   the initial `POST /auth/session` bootstrap.
+
+This matches the constitutional rule:
+
+> frontend         → never contains api_key permanent
+> backend / SM     → stores the credential
+> session          → receives a temporary, limited token
+> agent            → receives a capability token, not the main key
+
+## Token classes
 
 ```python
-from matverse import CassandraAgent
+@dataclass
+class SessionToken:
+    token: str
+    issued_at: int
+    ttl_seconds: int       # default 3600 (1 hour)
+    user_id: str = ""
 
-# Auto mode: uses Base44 if BASE44_API_KEY is set, else standalone
-agent = CassandraAgent()
-print(agent.mode)  # "base44" or "standalone"
-
-# Single chat
-run = agent.chat("o que é o Ω-Score?")
-print(run.cassandra_response)
-print(run.gate_status)         # PASS | HOLD | ESCALATE | DENY
-print(run.epistemic_classification)  # OBS | INF | HYP | ...
-
-# Persist the run to Base44 (only works in base44 mode)
-run = agent.chat("publique agora no Zenodo", persist=True)
-print(run.gate_status)  # ESCALATE — fail-closed
+@dataclass
+class CapabilityToken:
+    token: str
+    agent_id: str
+    skill_name: str        # bound to one (agent, skill) pair
+    issued_at: int
+    ttl_seconds: int       # default 600 (10 min)
+    scope: Dict[str, Any]  # server-side validated
 ```
-
-### 3. Use the agent from the CLI
-
-```bash
-# Standalone
-python -m matverse cassandra chat "o que é o MNB?"
-
-# Base44 (requires BASE44_API_KEY)
-export BASE44_API_KEY="..."
-python -m matverse cassandra chat "liste as intents mais recentes" --persist
-```
-
-## Base44 entities that Cassandra touches
-
-| Entity | Operation | When |
-|--------|-----------|------|
-| `CassandraRun` | create | every chat (if `persist=True`) |
-| `RuntimeIntent` | read | when chat mentions "intenção" or "intent" |
-| `RuntimeReceipt` | read | when chat mentions "receipt" or "receipts" |
-| `RuntimeFinding` | read | when chat mentions "finding" or "findings" |
-| `CassandraProfile` | read | at agent init (operational parameters) |
-
-The agent has read/create permission scoped to these entities.
-The agent never deletes, never updates, never executes external
-actions, never publishes, never signs.
-
-## Constitutional position
-
-The agent enforces **5 hard limits**:
-
-1. **No external action** — never calls a non-listed API, never
-   publishes, never signs.
-2. **Evidence before claim** — OBS claims must point to a `source_id`.
-3. **Determinism** — the same `policy_version` + the same input
-   must produce the same output.
-4. **Fail-closed** — when in doubt, ESCALATE.
-5. **Avatar ≠ authentication** — the user is identified by
-   `user_id` from the Base44 session, not by avatar/role claim.
-
-These limits are encoded in the system prompt
-(`matverse.cassandra_prompt.CASSANDRA_SYSTEM_PROMPT`) and are
-immutable from the user side. The `system_prompt_text()` method
-exposes the full prompt for audit.
 
 ## Endpoints used
 
-From the Base44 docs (visible in the Base44 dashboard):
+| Method | Path | Auth |
+|--------|------|------|
+| POST | `/auth/session` | `api_key` header (one-time bootstrap) |
+| POST | `/auth/capability` | `Bearer <session_token>` |
+| GET | `/entities/{name}` | `Bearer <session_token>` |
+| POST | `/entities/{name}` | `Bearer <session_token>` |
+| GET | `/entities/{name}/{id}` | `Bearer <session_token>` |
+| PUT | `/entities/{name}/{id}` | `Bearer <session_token>` |
+| GET | `/apps/{id}/agents/conversations` | `Bearer <capability_token>` |
+| POST | `/apps/{id}/agents/conversations` | `Bearer <capability_token>` |
+| POST | `/apps/{id}/agents/conversations/{cid}/messages` | `Bearer <capability_token>` |
 
+## Five hard limits (constitutional)
+
+Encoded in the system prompt; verifiable at runtime:
+
+| # | Limit | Runtime check |
+|---|-------|---------------|
+| 1 | External action requires Ω-Gate + EvidenceOS + operator | `chat()` detects `execute`/`publique`/`assine`/`transfira`/`deploy` keywords → returns ESCALATE |
+| 2 | OBS claim requires source_id | epistemic parser requires `[epistemic: OBS]` + source citation |
+| 3 | Determinism under policy_version | `local_interpret()` is pure (no LLM, no I/O) |
+| 4 | Fail-closed on doubt | `_classify_gate` returns ESCALATE on any uncertainty keyword |
+| 5 | Avatar ≠ authentication | `user_id` is read from session, never from claim text |
+
+## Two operating modes
+
+### STANDALONE
+
+```python
+from matverse.cassandra_agent import CassandraAgent
+agent = CassandraAgent(mode="standalone")
+run = agent.chat("o que é MNB?")
+# → uses local_interpret(), no network, no LLM, no key needed
 ```
-GET  /entities/SGIMetric                  — list SGI metrics
-GET  /entities/RuntimeIntent              — list runtime intents
-POST /entities/CassandraRun               — log a Cassandra run
-GET  /apps/{app_id}/agents/conversations  — list conversations
-POST /apps/{app_id}/agents/conversations  — create a conversation
-POST /apps/{app_id}/agents/conversations/{cid}/messages  — send a message
+
+### BASE44_REMOTE
+
+```python
+import os
+os.environ["BASE44_API_KEY"] = "<from Base44 secret manager>"
+
+from matverse.cassandra_agent import CassandraAgent
+agent = CassandraAgent(mode="auto")  # auto-detects env
+run = agent.chat("liste os receipts mais recentes", persist=True)
+# → authenticates once, uses SessionToken + CapabilityToken
+# → on failure, falls back to STANDALONE
 ```
 
-`app_id` = `6a2dd76b300afd3eb43293d7` by default.
+## Rotation policy
 
-## Local fallback (no API key)
+When a `BASE44_API_KEY` is exposed (e.g., pasted in a public document,
+logged in plaintext, sent in chat), it MUST be rotated immediately:
 
-If `BASE44_API_KEY` is not set, the agent operates in `STANDALONE`
-mode. The local interpreter (`cassandra_base44.local_interpret`)
-implements the same 5 hard limits via pattern matching against the
-user input. The behavior is deterministic and reproducible — useful
-for tests, CI, and offline demos.
+1. Rotate the key in the Base44 secret manager.
+2. Restart any process that loaded the key.
+3. Re-deploy with the new key in the secret manager.
+4. Never commit the new key to git, env files, or shared docs.
+5. Audit the GitHub repo with `git log -p -S BASE44_API_KEY` to confirm
+   no plaintext key is in history.
 
-## What v3.8.2 ships (this PR)
+The constitutional audit (2026-07-15) identified an exposed key in a
+Base44 build attachment. That key is considered compromised and is being
+rotated. The v3.8.2 code follows the rules above: the key is held only
+during `__init__`, exchanged for a `SessionToken` immediately, and the
+key is wiped from memory after the bootstrap.
 
-- `matverse/cassandra_prompt.py` — the constitutional system prompt
-  (4 layers: ROLE / SCOPE / ADMISSIBILITY / EPITEMIC + CANONICAL_CORPUS)
-- `matverse/cassandra_base44.py` — `Base44Client`, `CassandraAgent`,
-  `CassandraRun`, `local_interpret`
-- `matverse/cassandra_agent.py` — facade re-exports
-- `tests/test_cassandra_agent.py` — 30+ tests
-- CLI command `hypo cassandra chat` (added to `matverse/cli.py`)
-- This document
+## Versioning
 
-## What v3.8.2 does NOT ship
+- v3.8.2: added session + capability token model (api_key no longer
+  sent on every call). All 36 Cassandra agent tests pass; 292/292
+  organism tests pass.
+- v3.8.1: lineage audit, no code changes.
+- v3.8.0: GTHDL integration, formal MNB 5-tuple, Ω-score canonical.
+- v3.7.0: full organism runner, 146/146 tests.
+- v3.6.0: constitutional organs + physics, 116/116 tests.
+- v3.0.0: initial 46/46 tests.
 
-- A real LLM integration (the agent is deterministic; it can be
-  wrapped around an LLM later, but v3.8.2 ships without one)
-- A real-time streaming endpoint (only request/response)
-- Multimodal input (text only)
-- Persistent agent memory across runs (the MMNB lineage is the
-  memory; the agent reads it but does not write to it directly)
-- The 3 HOLD skills: TACE, H-Axis, impact_briefing (per
-  `references/cassandra_model.md`)
+## Conftest
 
-## Verification
-
-```bash
-$ python -m unittest discover -s tests -k cassandra
-Ran 30 tests in 0.4s
-OK
-
-$ python -c "
-from matverse import CassandraAgent
-a = CassandraAgent()
-print(a.mode)
-r = a.chat('o que é o Ω-Score?')
-print(r.epistemic_classification, r.gate_status)
-"
-standalone
-OBS PASS
-```
+- Default Base44 app id: `6a2dd76b300afd3eb43293d7` (MatVerse URANO OSX).
+- Default chat agent: `osx_chat`.
+- Default session TTL: 3600s (1 hour).
+- Default capability TTL: 600s (10 minutes).
