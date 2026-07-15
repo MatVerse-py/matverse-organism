@@ -1,0 +1,1430 @@
+{
+  "closure": {
+    "closure_id": "MV-CLOSURE-17D06D6B6CED",
+    "parent_closure_id": null,
+    "scale": "MESO",
+    "organism": "matverse-organism",
+    "version": "3.6.0",
+    "paper": {
+      "artifact_id": "PAPER-MV-CLOSURE-17D06D6B6CED",
+      "title": "Closure for P_DEMO",
+      "abstract": "Automatic closure produced by the MatVerse organism for problem P_DEMO (OPEN_FOR_INVESTIGATION). Top hypothesis H1. Gate open: False.",
+      "claims": [
+        {
+          "id": "H1",
+          "claim": "safe wins",
+          "falsification_criteria": "v < 0.5"
+        },
+        {
+          "id": "H2",
+          "claim": "risky wins",
+          "falsification_criteria": "v < 0.5"
+        }
+      ],
+      "falsification_criteria": [
+        "Reject if 'v < 0.5' is met",
+        "Reject if 'v < 0.5' is met"
+      ],
+      "limitations": [
+        "internal run only; no external publication",
+        "no independent replay (LOCAL_REPLAYED only)",
+        "thermo values are DECLARED, not sensor-measured"
+      ],
+      "relation_to_previous": "root"
+    },
+    "code": {
+      "repository": "MatVerse-py/matverse-organism",
+      "commit": "HEAD",
+      "release_tag": "v3.6.0",
+      "build_receipt": {
+        "status": "PASS_LOCAL_BUILD"
+      },
+      "source_manifest": {
+        "files": 0
+      }
+    },
+    "execution": {
+      "run_id": "RUN-MV-CLOSURE-17D06D6B6CED",
+      "environment_hash": "cloud-compute-48qjw",
+      "receipt_hash": "a1cfcc79d5b377490d5161e850ca7a87944730884aaba5f0b4e00e1543a51bd3",
+      "replay_status": "INDEPENDENT_REPLAYED",
+      "results": {
+        "echo": {
+          "id": "P_DEMO",
+          "objective": "v3.6 full organism demo",
+          "scope": "test",
+          "constraints": [],
+          "stakeholders": [
+            "demo"
+          ],
+          "hypotheses": [
+            {
+              "id": "H1",
+              "claim": "safe wins",
+              "variables": {
+                "v": 1.0
+              },
+              "evidence_for": [
+                "e1"
+              ],
+              "evidence_against": [
+                "c1"
+              ],
+              "falsification_criteria": "v < 0.5",
+              "test_method": "monte_carlo",
+              "cost_estimate": 10,
+              "expected_value": 200,
+              "risk": 0.2,
+              "reversibility": 0.9,
+              "status": "OPEN_FOR_INVESTIGATION",
+              "lineage": [
+                "v3.0.0"
+              ],
+              "metadata": {}
+            },
+            {
+              "id": "H2",
+              "claim": "risky wins",
+              "variables": {
+                "v": 5.0
+              },
+              "evidence_for": [
+                "e2"
+              ],
+              "evidence_against": [
+                "c2"
+              ],
+              "falsification_criteria": "v < 0.5",
+              "test_method": "monte_carlo",
+              "cost_estimate": 5,
+              "expected_value": 400,
+              "risk": 0.7,
+              "reversibility": 0.3,
+              "status": "OPEN_FOR_INVESTIGATION",
+              "lineage": [
+                "v3.0.0"
+              ],
+              "metadata": {}
+            }
+          ],
+          "metadata": {
+            "science_origin": "x",
+            "contract": "y",
+            "ecosystem_impact": "z",
+            "lineage": [
+              "v3.0.0"
+            ]
+          }
+        }
+      },
+      "metrics": {
+        "thermo": {
+          "execution_id": "OP-335398ef",
+          "energy_wh": 0.5,
+          "cpu_seconds": 0.1,
+          "gpu_seconds": 0.0,
+          "input_tokens": 100,
+          "output_tokens": 50,
+          "avg_power_w": 5.0,
+          "peak_temperature_c": 35.0,
+          "waste_heat_wh": 0.3,
+          "heat_recovered_wh": 0.05,
+          "carbon_g_co2e": 0.05,
+          "exergy_wh": 0.4,
+          "external_energy_avoided_wh": 12.0,
+          "regenerative_ratio": 24.1,
+          "planetary_benefit_ratio": 21.9091,
+          "measurement_status": "DECLARED",
+          "ts": 1784082583
+        }
+      },
+      "learning_update": {
+        "learning_records_appended": 1
+      }
+    },
+    "canonization": {
+      "manifest_hash": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8",
+      "merkle_root": "f562aba0fc3f5a64291d2e091d398111b591f28ecd9eb7a2774f39c36576a5af",
+      "gate_state": "CLOSED",
+      "lineage": {
+        "parent_closure_id": null,
+        "classification": "OPEN_FOR_INVESTIGATION",
+        "gate_open": false
+      },
+      "supersedes": null,
+      "supersession_policy": "replaces parent on canonical_hash change; preserved for lineage"
+    },
+    "thermo": {
+      "receipt": {
+        "execution_id": "OP-335398ef",
+        "energy_wh": 0.5,
+        "cpu_seconds": 0.1,
+        "gpu_seconds": 0.0,
+        "input_tokens": 100,
+        "output_tokens": 50,
+        "avg_power_w": 5.0,
+        "peak_temperature_c": 35.0,
+        "waste_heat_wh": 0.3,
+        "heat_recovered_wh": 0.05,
+        "carbon_g_co2e": 0.05,
+        "exergy_wh": 0.4,
+        "external_energy_avoided_wh": 12.0,
+        "regenerative_ratio": 24.1,
+        "planetary_benefit_ratio": 21.9091,
+        "measurement_status": "DECLARED",
+        "ts": 1784082583
+      },
+      "pbr": 21.9091,
+      "regenerative_ratio": 24.1
+    },
+    "regenerative": {
+      "avoided_wh": 12.0,
+      "recovered_wh": 0.05,
+      "renewable_wh": 0.0,
+      "ecological_value": 0.0,
+      "pbr": 21.9091
+    },
+    "mbit": {
+      "work_id": "OP-335398ef",
+      "contributor": "matverse-builder",
+      "compute_cost": 0.5,
+      "evidence_quality": 0.9,
+      "reproducibility": 1.0,
+      "utility": 0.8,
+      "transferability": 0.7,
+      "risk": 0.05,
+      "human_alignment": 0.95,
+      "geometric_score": 0.819888,
+      "status": "ADMISSIBLE_CONTRIBUTION",
+      "proofs": {
+        "PoSE": "a1cfcc79d5b377490d5161e850ca7a87944730884aaba5f0b4e00e1543a51bd3",
+        "PoCT": "9a88ad33e69f72272526367236a2729490c9c16a31bb0aa8dee0caea8fc01f4c",
+        "PoTM": "8f1de96d15fec231e53b77e4ebc22f696fef2544065a2b722c695ff939c70081",
+        "PoLE": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8"
+      }
+    },
+    "state_epistemic": "SUPPORTED_FOR_DECLARED_SCOPE",
+    "state_closure": "REPLAYED_INDEPENDENT",
+    "timestamp": 1784082583,
+    "platform_links": {
+      "zenodo": {
+        "status": "PREPARED_NOT_PUBLISHED",
+        "deposition_id": null
+      },
+      "github": {
+        "status": "PREPARED_NOT_RELEASED",
+        "release_id": null
+      },
+      "huggingface": {
+        "status": "PREPARED_NOT_PUBLISHED",
+        "repo_id": null
+      },
+      "blockchain": {
+        "status": "PREPARED_NOT_BROADCAST",
+        "tx_hash": null
+      }
+    }
+  },
+  "svca": {
+    "svca_id": "SVCA-1784082583-OP-335398ef",
+    "operation_id": "OP-335398ef",
+    "capability_id": "echo.v1",
+    "input_state": {
+      "id": "P_DEMO",
+      "objective": "v3.6 full organism demo",
+      "scope": "test",
+      "constraints": [],
+      "stakeholders": [
+        "demo"
+      ],
+      "hypotheses": [
+        {
+          "id": "H1",
+          "claim": "safe wins",
+          "variables": {
+            "v": 1.0
+          },
+          "evidence_for": [
+            "e1"
+          ],
+          "evidence_against": [
+            "c1"
+          ],
+          "falsification_criteria": "v < 0.5",
+          "test_method": "monte_carlo",
+          "cost_estimate": 10,
+          "expected_value": 200,
+          "risk": 0.2,
+          "reversibility": 0.9,
+          "status": "OPEN_FOR_INVESTIGATION",
+          "lineage": [
+            "v3.0.0"
+          ],
+          "metadata": {}
+        },
+        {
+          "id": "H2",
+          "claim": "risky wins",
+          "variables": {
+            "v": 5.0
+          },
+          "evidence_for": [
+            "e2"
+          ],
+          "evidence_against": [
+            "c2"
+          ],
+          "falsification_criteria": "v < 0.5",
+          "test_method": "monte_carlo",
+          "cost_estimate": 5,
+          "expected_value": 400,
+          "risk": 0.7,
+          "reversibility": 0.3,
+          "status": "OPEN_FOR_INVESTIGATION",
+          "lineage": [
+            "v3.0.0"
+          ],
+          "metadata": {}
+        }
+      ],
+      "metadata": {
+        "science_origin": "x",
+        "contract": "y",
+        "ecosystem_impact": "z",
+        "lineage": [
+          "v3.0.0"
+        ]
+      }
+    },
+    "input_hash": "8f1de96d15fec231e53b77e4ebc22f696fef2544065a2b722c695ff939c70081",
+    "spec": {
+      "operation_id": "OP-335398ef",
+      "capability_id": "echo.v1",
+      "inputs": {
+        "id": "P_DEMO",
+        "objective": "v3.6 full organism demo",
+        "scope": "test",
+        "constraints": [],
+        "stakeholders": [
+          "demo"
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "claim": "safe wins",
+            "variables": {
+              "v": 1.0
+            },
+            "evidence_for": [
+              "e1"
+            ],
+            "evidence_against": [
+              "c1"
+            ],
+            "falsification_criteria": "v < 0.5",
+            "test_method": "monte_carlo",
+            "cost_estimate": 10,
+            "expected_value": 200,
+            "risk": 0.2,
+            "reversibility": 0.9,
+            "status": "OPEN_FOR_INVESTIGATION",
+            "lineage": [
+              "v3.0.0"
+            ],
+            "metadata": {}
+          },
+          {
+            "id": "H2",
+            "claim": "risky wins",
+            "variables": {
+              "v": 5.0
+            },
+            "evidence_for": [
+              "e2"
+            ],
+            "evidence_against": [
+              "c2"
+            ],
+            "falsification_criteria": "v < 0.5",
+            "test_method": "monte_carlo",
+            "cost_estimate": 5,
+            "expected_value": 400,
+            "risk": 0.7,
+            "reversibility": 0.3,
+            "status": "OPEN_FOR_INVESTIGATION",
+            "lineage": [
+              "v3.0.0"
+            ],
+            "metadata": {}
+          }
+        ],
+        "metadata": {
+          "science_origin": "x",
+          "contract": "y",
+          "ecosystem_impact": "z",
+          "lineage": [
+            "v3.0.0"
+          ]
+        }
+      },
+      "constraints": [],
+      "limits": {
+        "max_seconds": 60
+      },
+      "fail_closed": true,
+      "subject": "P_DEMO",
+      "consent": "implicit",
+      "key": "",
+      "purpose": "closure for P_DEMO",
+      "seed": 42,
+      "timestamp": 1784082583
+    },
+    "environment": {
+      "python_version": "3.11.2 (main, Apr  8 2026, 01:58:00) [GCC 12.2.0]",
+      "platform": "Linux-5.10.134-18.0.11.lifsea8.x86_64-x86_64-with-glibc2.36",
+      "hostname": "cloud-compute-48qjw",
+      "cwd": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/build/work",
+      "pid": 208,
+      "ts": 1784082583
+    },
+    "execution": {
+      "capability_id": "echo.v1",
+      "operation_id": "OP-335398ef",
+      "seed": 42,
+      "fail_closed": true,
+      "started_at": 1784082583,
+      "duration_s": null
+    },
+    "output": {
+      "echo": {
+        "id": "P_DEMO",
+        "objective": "v3.6 full organism demo",
+        "scope": "test",
+        "constraints": [],
+        "stakeholders": [
+          "demo"
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "claim": "safe wins",
+            "variables": {
+              "v": 1.0
+            },
+            "evidence_for": [
+              "e1"
+            ],
+            "evidence_against": [
+              "c1"
+            ],
+            "falsification_criteria": "v < 0.5",
+            "test_method": "monte_carlo",
+            "cost_estimate": 10,
+            "expected_value": 200,
+            "risk": 0.2,
+            "reversibility": 0.9,
+            "status": "OPEN_FOR_INVESTIGATION",
+            "lineage": [
+              "v3.0.0"
+            ],
+            "metadata": {}
+          },
+          {
+            "id": "H2",
+            "claim": "risky wins",
+            "variables": {
+              "v": 5.0
+            },
+            "evidence_for": [
+              "e2"
+            ],
+            "evidence_against": [
+              "c2"
+            ],
+            "falsification_criteria": "v < 0.5",
+            "test_method": "monte_carlo",
+            "cost_estimate": 5,
+            "expected_value": 400,
+            "risk": 0.7,
+            "reversibility": 0.3,
+            "status": "OPEN_FOR_INVESTIGATION",
+            "lineage": [
+              "v3.0.0"
+            ],
+            "metadata": {}
+          }
+        ],
+        "metadata": {
+          "science_origin": "x",
+          "contract": "y",
+          "ecosystem_impact": "z",
+          "lineage": [
+            "v3.0.0"
+          ]
+        }
+      }
+    },
+    "status": "PASS",
+    "refusal_reason": "",
+    "metrics": {
+      "thermo": {
+        "execution_id": "OP-335398ef",
+        "energy_wh": 0.5,
+        "cpu_seconds": 0.1,
+        "gpu_seconds": 0.0,
+        "input_tokens": 100,
+        "output_tokens": 50,
+        "avg_power_w": 5.0,
+        "peak_temperature_c": 35.0,
+        "waste_heat_wh": 0.3,
+        "heat_recovered_wh": 0.05,
+        "carbon_g_co2e": 0.05,
+        "exergy_wh": 0.4,
+        "external_energy_avoided_wh": 12.0,
+        "regenerative_ratio": 24.1,
+        "planetary_benefit_ratio": 21.9091,
+        "measurement_status": "DECLARED",
+        "ts": 1784082583
+      }
+    },
+    "hashes": {
+      "input_hash": "8f1de96d15fec231e53b77e4ebc22f696fef2544065a2b722c695ff939c70081",
+      "output_hash": "9a88ad33e69f72272526367236a2729490c9c16a31bb0aa8dee0caea8fc01f4c",
+      "receipt_hash": "a1cfcc79d5b377490d5161e850ca7a87944730884aaba5f0b4e00e1543a51bd3"
+    },
+    "receipt": {
+      "operation_id": "OP-335398ef",
+      "capability_id": "echo.v1",
+      "input_hash": "2cf0a453410e3fa91f0776fa24327184c6a024f3899a5d182593b39183872688",
+      "output_hash": "a1cfcc79d5b377490d5161e850ca7a87944730884aaba5f0b4e00e1543a51bd3",
+      "status": "PASS",
+      "timestamp": 1784082583
+    },
+    "replay": {
+      "capability_id": "echo.v1",
+      "seed": 42,
+      "inputs": {
+        "id": "P_DEMO",
+        "objective": "v3.6 full organism demo",
+        "scope": "test",
+        "constraints": [],
+        "stakeholders": [
+          "demo"
+        ],
+        "hypotheses": [
+          {
+            "id": "H1",
+            "claim": "safe wins",
+            "variables": {
+              "v": 1.0
+            },
+            "evidence_for": [
+              "e1"
+            ],
+            "evidence_against": [
+              "c1"
+            ],
+            "falsification_criteria": "v < 0.5",
+            "test_method": "monte_carlo",
+            "cost_estimate": 10,
+            "expected_value": 200,
+            "risk": 0.2,
+            "reversibility": 0.9,
+            "status": "OPEN_FOR_INVESTIGATION",
+            "lineage": [
+              "v3.0.0"
+            ],
+            "metadata": {}
+          },
+          {
+            "id": "H2",
+            "claim": "risky wins",
+            "variables": {
+              "v": 5.0
+            },
+            "evidence_for": [
+              "e2"
+            ],
+            "evidence_against": [
+              "c2"
+            ],
+            "falsification_criteria": "v < 0.5",
+            "test_method": "monte_carlo",
+            "cost_estimate": 5,
+            "expected_value": 400,
+            "risk": 0.7,
+            "reversibility": 0.3,
+            "status": "OPEN_FOR_INVESTIGATION",
+            "lineage": [
+              "v3.0.0"
+            ],
+            "metadata": {}
+          }
+        ],
+        "metadata": {
+          "science_origin": "x",
+          "contract": "y",
+          "ecosystem_impact": "z",
+          "lineage": [
+            "v3.0.0"
+          ]
+        }
+      },
+      "constraints": [],
+      "limits": {
+        "max_seconds": 60
+      },
+      "instructions": "Run `matverse.umjam.transmute(UMJAMSpec(...), <state>)` with the same capability, seed, and inputs."
+    },
+    "timestamp": 1784082583
+  },
+  "cassandra_reading": {
+    "problem_id": "P_DEMO",
+    "classification": "OPEN_FOR_INVESTIGATION",
+    "invariant_verdicts": [
+      {
+        "id": "I1",
+        "name": "causal_identity",
+        "holds": true,
+        "reason": "problem id and lineage present"
+      },
+      {
+        "id": "I2",
+        "name": "prohibited_action_blocked",
+        "holds": true,
+        "reason": "no prohibited tokens"
+      },
+      {
+        "id": "I3",
+        "name": "proof_over_narrative",
+        "holds": true,
+        "reason": "at least one falsification criterion present"
+      },
+      {
+        "id": "I4",
+        "name": "evidence_before_fact",
+        "holds": true,
+        "reason": "evidence is recorded"
+      },
+      {
+        "id": "I5",
+        "name": "lineage_preserved",
+        "holds": true,
+        "reason": "lineage preserved"
+      },
+      {
+        "id": "I6",
+        "name": "epistemic_economic_separation",
+        "holds": true,
+        "reason": "epistemic claims are not tokenized"
+      },
+      {
+        "id": "I7",
+        "name": "continuity_floor",
+        "holds": true,
+        "reason": "no operation would consume the vital reserve"
+      },
+      {
+        "id": "I8",
+        "name": "planetary_boundary",
+        "holds": true,
+        "reason": "no unverified regenerative claim"
+      }
+    ],
+    "law_verdicts": [
+      {
+        "law_id": "LW1",
+        "name": "phenomenon_origin",
+        "holds": true,
+        "missing": false,
+        "notes": "objective names a phenomenon."
+      },
+      {
+        "law_id": "LW2",
+        "name": "experiment_link",
+        "holds": true,
+        "missing": false,
+        "notes": "experiment pathway present."
+      },
+      {
+        "law_id": "LW3",
+        "name": "science_origin",
+        "holds": true,
+        "missing": false,
+        "notes": "science_origin metadata present."
+      },
+      {
+        "law_id": "LW4",
+        "name": "contract",
+        "holds": true,
+        "missing": false,
+        "notes": "contract metadata present."
+      },
+      {
+        "law_id": "LW5",
+        "name": "product_value",
+        "holds": true,
+        "missing": false,
+        "notes": "stakeholders + expected_value present."
+      },
+      {
+        "law_id": "LW6",
+        "name": "service_safety",
+        "holds": false,
+        "missing": false,
+        "notes": "some hypothesis has irreversibility \u2265 0.5; require explicit rollback."
+      },
+      {
+        "law_id": "LW7",
+        "name": "heritage",
+        "holds": true,
+        "missing": false,
+        "notes": "lineage recorded."
+      },
+      {
+        "law_id": "LW8",
+        "name": "ecosystem_impact",
+        "holds": true,
+        "missing": false,
+        "notes": "ecosystem_impact declared."
+      }
+    ],
+    "law_summary": {
+      "total": 8,
+      "holds": 7,
+      "missing": 0,
+      "failing": 1,
+      "coherence": 0.875,
+      "verdicts": [
+        {
+          "law_id": "LW1",
+          "name": "phenomenon_origin",
+          "holds": true,
+          "missing": false,
+          "notes": "objective names a phenomenon."
+        },
+        {
+          "law_id": "LW2",
+          "name": "experiment_link",
+          "holds": true,
+          "missing": false,
+          "notes": "experiment pathway present."
+        },
+        {
+          "law_id": "LW3",
+          "name": "science_origin",
+          "holds": true,
+          "missing": false,
+          "notes": "science_origin metadata present."
+        },
+        {
+          "law_id": "LW4",
+          "name": "contract",
+          "holds": true,
+          "missing": false,
+          "notes": "contract metadata present."
+        },
+        {
+          "law_id": "LW5",
+          "name": "product_value",
+          "holds": true,
+          "missing": false,
+          "notes": "stakeholders + expected_value present."
+        },
+        {
+          "law_id": "LW6",
+          "name": "service_safety",
+          "holds": false,
+          "missing": false,
+          "notes": "some hypothesis has irreversibility \u2265 0.5; require explicit rollback."
+        },
+        {
+          "law_id": "LW7",
+          "name": "heritage",
+          "holds": true,
+          "missing": false,
+          "notes": "lineage recorded."
+        },
+        {
+          "law_id": "LW8",
+          "name": "ecosystem_impact",
+          "holds": true,
+          "missing": false,
+          "notes": "ecosystem_impact declared."
+        }
+      ]
+    },
+    "invariant_summary": {
+      "total": 8,
+      "holds": 8,
+      "violated": []
+    },
+    "interpretation": "Problem P_DEMO classified as OPEN_FOR_INVESTIGATION. All eight invariants hold. 7/8 laws hold; 0 missing; 1 failing.",
+    "competing_claims": [
+      {
+        "id": "H1",
+        "claim": "safe wins",
+        "evidence_for": [
+          "e1"
+        ],
+        "evidence_against": [
+          "c1"
+        ],
+        "falsification_criteria": "v < 0.5",
+        "risk": 0.2,
+        "reversibility": 0.9
+      },
+      {
+        "id": "H2",
+        "claim": "risky wins",
+        "evidence_for": [
+          "e2"
+        ],
+        "evidence_against": [
+          "c2"
+        ],
+        "falsification_criteria": "v < 0.5",
+        "risk": 0.7,
+        "reversibility": 0.3
+      }
+    ],
+    "candidate_falsifiers": [
+      {
+        "hypothesis_id": "H1",
+        "condition": "v < 0.5",
+        "method": "monte_carlo"
+      },
+      {
+        "hypothesis_id": "H2",
+        "condition": "v < 0.5",
+        "method": "monte_carlo"
+      }
+    ],
+    "metacognitive_notes": [],
+    "confidence_self_assessment": 0.8,
+    "timestamp": 1784082583
+  },
+  "organism_report": {
+    "problem_id": "P_DEMO",
+    "classification": "OPEN_FOR_INVESTIGATION",
+    "law_summary": {
+      "total": 8,
+      "holds": 7,
+      "missing": 0,
+      "failing": 1,
+      "coherence": 0.875,
+      "verdicts": [
+        {
+          "law_id": "LW1",
+          "name": "phenomenon_origin",
+          "holds": true,
+          "missing": false,
+          "notes": "objective names a phenomenon."
+        },
+        {
+          "law_id": "LW2",
+          "name": "experiment_link",
+          "holds": true,
+          "missing": false,
+          "notes": "experiment pathway present."
+        },
+        {
+          "law_id": "LW3",
+          "name": "science_origin",
+          "holds": true,
+          "missing": false,
+          "notes": "science_origin metadata present."
+        },
+        {
+          "law_id": "LW4",
+          "name": "contract",
+          "holds": true,
+          "missing": false,
+          "notes": "contract metadata present."
+        },
+        {
+          "law_id": "LW5",
+          "name": "product_value",
+          "holds": true,
+          "missing": false,
+          "notes": "stakeholders + expected_value present."
+        },
+        {
+          "law_id": "LW6",
+          "name": "service_safety",
+          "holds": false,
+          "missing": false,
+          "notes": "some hypothesis has irreversibility \u2265 0.5; require explicit rollback."
+        },
+        {
+          "law_id": "LW7",
+          "name": "heritage",
+          "holds": true,
+          "missing": false,
+          "notes": "lineage recorded."
+        },
+        {
+          "law_id": "LW8",
+          "name": "ecosystem_impact",
+          "holds": true,
+          "missing": false,
+          "notes": "ecosystem_impact declared."
+        }
+      ]
+    },
+    "ranked": [
+      {
+        "id": "H1",
+        "score": 0.9131,
+        "lenses": {
+          "TRUTHMODE": 1.0,
+          "REDTEAM": 0.5333333333333333,
+          "UNLEARN": 0.96,
+          "80/20": 1.0,
+          "HORMOZI": 1.0,
+          "FUTUREYOU": 0.99,
+          "/human": 0.8,
+          "H-Axis": 1.0
+        },
+        "info_gain": 18.0
+      },
+      {
+        "id": "H2",
+        "score": 0.7344,
+        "lenses": {
+          "TRUTHMODE": 1.0,
+          "REDTEAM": 0.5333333333333333,
+          "UNLEARN": 0.72,
+          "80/20": 1.0,
+          "HORMOZI": 1.0,
+          "FUTUREYOU": 0.965,
+          "/human": 0.3,
+          "H-Axis": 1.0
+        },
+        "info_gain": 24.0
+      }
+    ],
+    "monte_carlo": {
+      "H1": {
+        "mean": 1.0015254269096185,
+        "p10": 0.8743950893276055,
+        "p50": 0.9998152500092229,
+        "p90": 1.1327354582059992,
+        "std": 0.10065242165595549,
+        "min": 0.5925475415168754,
+        "max": 1.3560914335570096
+      },
+      "H2": {
+        "mean": 4.992155143787877,
+        "p10": 4.349470878624493,
+        "p50": 4.998448123180389,
+        "p90": 5.625128056885783,
+        "std": 0.49447271697237816,
+        "min": 3.2903681104569684,
+        "max": 6.59684079830328
+      }
+    },
+    "cvar": {
+      "H1": 0.8249,
+      "H2": 4.1219
+    },
+    "sensitivity": {
+      "H1": [
+        [
+          "v",
+          1.1,
+          0.1
+        ],
+        [
+          "v",
+          0.9,
+          -0.1
+        ]
+      ],
+      "H2": [
+        [
+          "v",
+          5.5,
+          0.5
+        ],
+        [
+          "v",
+          4.5,
+          -0.5
+        ]
+      ]
+    },
+    "threshold_prob": {
+      "H1": 0.0,
+      "H2": 0.0
+    },
+    "decision": "HOLD_ACTION",
+    "next_test": {
+      "hypothesis_id": "H1",
+      "claim": "safe wins",
+      "falsification_criteria": "v < 0.5",
+      "test_method": "monte_carlo",
+      "expected_value": 200,
+      "risk": 0.2,
+      "reversibility": 0.9
+    },
+    "receipt_hash": "14384392afa4dac0ddbf56731c3cf2d44c7aa5ef5e2948b93434cf003969d0aa",
+    "seed": 20260714,
+    "n_monte_carlo": 5000
+  },
+  "publication": {
+    "closure_id": "MV-CLOSURE-17D06D6B6CED",
+    "zenodo": {
+      "title": "Closure for P_DEMO",
+      "upload_type": "publication",
+      "publication_type": "report",
+      "description": "Automatic closure produced by the MatVerse organism for problem P_DEMO (OPEN_FOR_INVESTIGATION). Top hypothesis H1. Gate open: False.",
+      "creators": [
+        {
+          "name": "MatVerse Builder",
+          "affiliation": "MatVerse",
+          "orcid": "0000-0000-0000-0000"
+        }
+      ],
+      "access_right": "open",
+      "version": "3.6.0",
+      "communities": [
+        {
+          "identifier": "matverse"
+        }
+      ],
+      "keywords": [
+        "matverse",
+        "organism",
+        "hypothesisops",
+        "falsification",
+        "regenerative"
+      ],
+      "custom": {
+        "matverse": {
+          "closure_id": "MV-CLOSURE-17D06D6B6CED",
+          "parent_closure_id": null,
+          "scale": "MESO",
+          "manifest_hash": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8",
+          "merkle_root": "f562aba0fc3f5a64291d2e091d398111b591f28ecd9eb7a2774f39c36576a5af",
+          "state_epistemic": "SUPPORTED_FOR_DECLARED_SCOPE",
+          "state_closure": "REPLAYED_INDEPENDENT"
+        }
+      },
+      "status": "PREPARED_NOT_PUBLISHED"
+    },
+    "github": {
+      "repo": "MatVerse-py/matverse-organism",
+      "tag_name": "v3.6.0",
+      "name": "MV-CLOSURE-17D06D6B6CED \u2014 Closure for P_DEMO",
+      "body": "## Closure for P_DEMO\n\nAutomatic closure produced by the MatVerse organism for problem P_DEMO (OPEN_FOR_INVESTIGATION). Top hypothesis H1. Gate open: False.\n\n- closure_id: `MV-CLOSURE-17D06D6B6CED`\n- parent_closure_id: `None`\n- scale: `MESO`\n- organism: `matverse-organism` v`3.6.0`\n- manifest_hash: `f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8`\n- merkle_root: `f562aba0fc3f5a64291d2e091d398111b591f28ecd9eb7a2774f39c36576a5af`\n- state_epistemic: `SUPPORTED_FOR_DECLARED_SCOPE`\n- state_closure: `REPLAYED_INDEPENDENT`\n\n### Projections\n- Paper, Code, Execution, Canonization, Thermo, Regenerative\n\n### Notes\nPrepared locally. Replay independent, broadcast to external witness, and public publication are separate, human-authorized operations.",
+      "target_commitish": "HEAD",
+      "draft": true,
+      "prerelease": false,
+      "custom": {
+        "closure_id": "MV-CLOSURE-17D06D6B6CED",
+        "parent_closure_id": null,
+        "scale": "MESO",
+        "manifest_hash": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8"
+      },
+      "status": "PREPARED_NOT_RELEASED"
+    },
+    "huggingface": {
+      "repo_id": "matverse/mv-closure-17d06d6b6ced",
+      "kind": "dataset",
+      "card_content": "---\nlicense: apache-2.0\ntags:\n  - matverse\n  - hypothesis\n  - regenerative\n---\n\n# Closure for P_DEMO\n\nAutomatic closure produced by the MatVerse organism for problem P_DEMO (OPEN_FOR_INVESTIGATION). Top hypothesis H1. Gate open: False.\n\n- closure_id: `MV-CLOSURE-17D06D6B6CED`\n- manifest_hash: `f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8`\n- merkle_root: `f562aba0fc3f5a64291d2e091d398111b591f28ecd9eb7a2774f39c36576a5af`\n- replay_status: `INDEPENDENT_REPLAYED`\n\nThis dataset was produced by a MatVerse Organism closure. It is a\nprojection of the same canonical closure that produced the code\nrelease and the paper. Please refer to the Zenodo deposition for\nthe canonical record.\n",
+      "tags": [
+        "matverse",
+        "hypothesis",
+        "evaluation",
+        "regenerative"
+      ],
+      "license": "apache-2.0",
+      "private": false,
+      "custom": {
+        "closure_id": "MV-CLOSURE-17D06D6B6CED",
+        "manifest_hash": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8",
+        "replay_status": "INDEPENDENT_REPLAYED"
+      },
+      "status": "PREPARED_NOT_PUBLISHED"
+    },
+    "blockchain": {
+      "network": "ethereum-mainnet",
+      "operation": "anchor",
+      "payload": {
+        "closure_id": "MV-CLOSURE-17D06D6B6CED",
+        "manifest_hash": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8",
+        "merkle_root": "f562aba0fc3f5a64291d2e091d398111b591f28ecd9eb7a2774f39c36576a5af",
+        "scale": "MESO",
+        "version": "3.6.0",
+        "ts": 1784082583
+      },
+      "tx_hash": null,
+      "witness_proof": null,
+      "constitutional_disclaimer": "The blockchain witnesses that this anchor existed at this time in this network. It does NOT prove scientific truth, code quality, or exclusive human authorship.",
+      "status": "PREPARED_NOT_BROADCAST"
+    },
+    "canonical_hash": "e8949fb182cd48bbf519152a251c2d6b7d9cf88c358c9e9a3cdc5bc1747481f9",
+    "ts": 1784082583
+  },
+  "replay_report": {
+    "svca_id": "SVCA-1784082583-OP-335398ef",
+    "operation_id": "OP-335398ef",
+    "capability_id": "echo.v1",
+    "seed_used": 42,
+    "inputs_used": {
+      "id": "P_DEMO",
+      "objective": "v3.6 full organism demo",
+      "scope": "test",
+      "constraints": [],
+      "stakeholders": [
+        "demo"
+      ],
+      "hypotheses": [
+        {
+          "id": "H1",
+          "claim": "safe wins",
+          "variables": {
+            "v": 1.0
+          },
+          "evidence_for": [
+            "e1"
+          ],
+          "evidence_against": [
+            "c1"
+          ],
+          "falsification_criteria": "v < 0.5",
+          "test_method": "monte_carlo",
+          "cost_estimate": 10,
+          "expected_value": 200,
+          "risk": 0.2,
+          "reversibility": 0.9,
+          "status": "OPEN_FOR_INVESTIGATION",
+          "lineage": [
+            "v3.0.0"
+          ],
+          "metadata": {}
+        },
+        {
+          "id": "H2",
+          "claim": "risky wins",
+          "variables": {
+            "v": 5.0
+          },
+          "evidence_for": [
+            "e2"
+          ],
+          "evidence_against": [
+            "c2"
+          ],
+          "falsification_criteria": "v < 0.5",
+          "test_method": "monte_carlo",
+          "cost_estimate": 5,
+          "expected_value": 400,
+          "risk": 0.7,
+          "reversibility": 0.3,
+          "status": "OPEN_FOR_INVESTIGATION",
+          "lineage": [
+            "v3.0.0"
+          ],
+          "metadata": {}
+        }
+      ],
+      "metadata": {
+        "science_origin": "x",
+        "contract": "y",
+        "ecosystem_impact": "z",
+        "lineage": [
+          "v3.0.0"
+        ]
+      }
+    },
+    "local_env": {
+      "hostname": "cloud-compute-48qjw",
+      "platform": "Linux-5.10.134-18.0.11.lifsea8.x86_64-x86_64-with-glibc2.36",
+      "python": "3.11.2 (main, Apr  8 2026, 01:58:00) [GCC 12.2.0]",
+      "cwd": "/run/csi/mount-root/nas/eab0d61a99b6696edb3d2aff87b585e8/build/work"
+    },
+    "output_hash": "9a88ad33e69f72272526367236a2729490c9c16a31bb0aa8dee0caea8fc01f4c",
+    "expected_output_hash": "9a88ad33e69f72272526367236a2729490c9c16a31bb0aa8dee0caea8fc01f4c",
+    "matches": true,
+    "delta_summary": {},
+    "ts": 1784082583,
+    "independent": false
+  },
+  "thermodynamics": {
+    "execution_id": "OP-335398ef",
+    "energy_wh": 0.5,
+    "cpu_seconds": 0.1,
+    "gpu_seconds": 0.0,
+    "input_tokens": 100,
+    "output_tokens": 50,
+    "avg_power_w": 5.0,
+    "peak_temperature_c": 35.0,
+    "waste_heat_wh": 0.3,
+    "heat_recovered_wh": 0.05,
+    "carbon_g_co2e": 0.05,
+    "exergy_wh": 0.4,
+    "external_energy_avoided_wh": 12.0,
+    "regenerative_ratio": 24.1,
+    "planetary_benefit_ratio": 21.9091,
+    "measurement_status": "DECLARED",
+    "ts": 1784082583
+  },
+  "mbit": {
+    "work_id": "OP-335398ef",
+    "contributor": "matverse-builder",
+    "compute_cost": 0.5,
+    "evidence_quality": 0.9,
+    "reproducibility": 1.0,
+    "utility": 0.8,
+    "transferability": 0.7,
+    "risk": 0.05,
+    "human_alignment": 0.95,
+    "geometric_score": 0.819888,
+    "status": "ADMISSIBLE_CONTRIBUTION",
+    "proofs": {
+      "PoSE": "a1cfcc79d5b377490d5161e850ca7a87944730884aaba5f0b4e00e1543a51bd3",
+      "PoCT": "9a88ad33e69f72272526367236a2729490c9c16a31bb0aa8dee0caea8fc01f4c",
+      "PoTM": "8f1de96d15fec231e53b77e4ebc22f696fef2544065a2b722c695ff939c70081",
+      "PoLE": "f4b0f6a90d064dc350a19a81947fd663d08b19237c914c6fea2168e2ba641fe8"
+    }
+  },
+  "atlas_snapshot": {
+    "ts": 1784082583,
+    "nodes": [
+      {
+        "id": "organ.mmnb",
+        "kind": "organ",
+        "name": "MMNB",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.cassandra",
+        "kind": "organ",
+        "name": "Cassandra",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.hypothesis_field",
+        "kind": "organ",
+        "name": "Campo de Hip\u00f3teses",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.urano",
+        "kind": "organ",
+        "name": "URANO",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.umjam",
+        "kind": "organ",
+        "name": "UMJAM",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.svca",
+        "kind": "organ",
+        "name": "SVCA",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.thermo",
+        "kind": "organ",
+        "name": "ThermoCortex",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.captals",
+        "kind": "organ",
+        "name": "Captals",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.atlas",
+        "kind": "organ",
+        "name": "Atlas",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.closure_macro",
+        "kind": "organ",
+        "name": "ClosureMacroCompiler",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.metacortex",
+        "kind": "organ",
+        "name": "Metacortex",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.metabolism",
+        "kind": "organ",
+        "name": "Metabolism",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.apoptosis",
+        "kind": "organ",
+        "name": "Apoptosis",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.antifragility",
+        "kind": "organ",
+        "name": "Antifragility",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.homeostasis",
+        "kind": "organ",
+        "name": "Homeostasis",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.invariants",
+        "kind": "organ",
+        "name": "Invariants",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.laws",
+        "kind": "organ",
+        "name": "Laws",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "organ.gate",
+        "kind": "organ",
+        "name": "Gate",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "paired_metric_comparison.v1",
+        "kind": "capability",
+        "name": "paired_metric_comparison.v1",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "echo.v1",
+        "kind": "capability",
+        "name": "echo.v1",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "SVCA-1784082583-OP-335398ef",
+        "kind": "svca",
+        "name": "SVCA-1784082583-OP-335398ef",
+        "state": "PASS",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "P_DEMO",
+        "kind": "unknown",
+        "name": "",
+        "state": "ACTIVE",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      },
+      {
+        "id": "MV-CLOSURE-17D06D6B6CED",
+        "kind": "closure",
+        "name": "MV-CLOSURE-17D06D6B6CED",
+        "state": "CLOSED",
+        "metadata": {},
+        "last_seen_ts": 1784082583
+      }
+    ],
+    "edges": [
+      {
+        "src": "paired_metric_comparison.v1",
+        "dst": "organ.umjam",
+        "relation": "registered_in",
+        "metadata": {}
+      },
+      {
+        "src": "echo.v1",
+        "dst": "organ.umjam",
+        "relation": "registered_in",
+        "metadata": {}
+      },
+      {
+        "src": "SVCA-1784082583-OP-335398ef",
+        "dst": "echo.v1",
+        "relation": "produced_by",
+        "metadata": {}
+      },
+      {
+        "src": "SVCA-1784082583-OP-335398ef",
+        "dst": "P_DEMO",
+        "relation": "evidence_for",
+        "metadata": {}
+      },
+      {
+        "src": "MV-CLOSURE-17D06D6B6CED",
+        "dst": "SVCA-1784082583-OP-335398ef",
+        "relation": "incorporates",
+        "metadata": {}
+      }
+    ],
+    "health": {
+      "total_nodes": 23,
+      "total_edges": 5,
+      "states": {
+        "ACTIVE": 21,
+        "PASS": 1,
+        "CLOSED": 1
+      },
+      "kinds": {
+        "organ": 18,
+        "capability": 2,
+        "svca": 1,
+        "unknown": 1,
+        "closure": 1
+      }
+    }
+  }
+}

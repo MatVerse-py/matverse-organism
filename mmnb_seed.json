@@ -1,0 +1,24 @@
+{
+  "id": "MMNB-v3-2026-07-14",
+  "name": "matverse-organism-v3",
+  "issued_at": 1721000000,
+  "issued_by": "MatVerse Builder",
+  "epoch": 3,
+  "initial_cells": 686,
+  "initial_capabilities": [
+    "parse_yaml",
+    "validate_schema",
+    "monte_carlo",
+    "cvx",
+    "ledger_append",
+    "ledger_verify",
+    "sensitivity",
+    "falsify"
+  ],
+  "axioms": [
+    "no_claim_without_falsification",
+    "no_external_side_effect_without_human_owner",
+    "no_truth_assertion_without_receipt"
+  ],
+  "phi_constant": 0.6180339887
+}

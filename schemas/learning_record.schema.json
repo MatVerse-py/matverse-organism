@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/MatVerse-py/matverse-organism/schemas/learning_record.schema.json",
+  "title": "LearningRecord",
+  "description": "A record of how the organism solved a problem, used by the Metacortex.",
+  "type": "object",
+  "required": ["timestamp", "problem_class", "strategy", "lenses_used", "monte_carlo_n", "seed", "outcome"],
+  "properties": {
+    "timestamp":               {"type": "integer"},
+    "problem_class":           {"type": "string"},
+    "strategy":                {"type": "string"},
+    "lenses_used":             {"type": "array", "items": {"type": "string"}},
+    "monte_carlo_n":           {"type": "integer", "minimum": 1},
+    "seed":                    {"type": "integer"},
+    "outcome":                 {"type": "string", "enum": ["PASS", "FAIL", "REFUTED_PRESERVED", "UNDERDETERMINED"]},
+    "time_to_decision_s":      {"type": "number", "minimum": 0},
+    "predicted_probability":   {"type": "number", "minimum": 0, "maximum": 1},
+    "observed_outcome_value":  {"type": "number"}
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "id": "P_CLI_ADOPTION",
+  "objective": "How to maximize adoption of a deterministic CLI for code review on GitHub",
+  "scope": "open-source dev tools, offline-first",
+  "constraints": [
+    "must work offline",
+    "must be deterministic given a seed",
+    "must not depend on external APIs at install time"
+  ],
+  "stakeholders": [
+    "open-source maintainers",
+    "individual contributors",
+    "DevRel teams"
+  ],
+  "hypotheses": [
+    {
+      "id": "H_OFFLINE",
+      "claim": "An offline-first CLI raises first-week downloads by at least 2x compared to the SaaS alternative",
+      "variables": {
+        "adoption_uplift": 2.0,
+        "sigma": 0.3
+      },
+      "evidence_for": [
+        "no auth wall at install time",
+        "fast feedback loop (< 200ms per check)",
+        "deterministic results improve trust"
+      ],
+      "evidence_against": [
+        "marketing of SaaS competitors is louder",
+        "OSS discoverability is generally weak"
+      ],
+      "falsification_criteria": "adoption_uplift < 1.2",
+      "test_method": "monte_carlo",
+      "cost_estimate": 20.0,
+      "expected_value": 500.0,
+      "risk": 0.2,
+      "reversibility": 0.95,
+      "lineage": ["v2.0.0", "MMNB-v3-2026-07-14"]
+    },
+    {
+      "id": "H_PROMISE",
+      "claim": "Promising the CLI solves any code-review problem maximizes downloads",
+      "variables": {
+        "adoption_uplift": 5.0,
+        "sigma": 0.8
+      },
+      "evidence_for": [
+        "viral headline potential",
+        "lowest possible barrier of entry"
+      ],
+      "evidence_against": [
+        "trust erosion when first failed test occurs",
+        "scope risk: cannot cover all reviews",
+        "reviewer time wasted on false positives"
+      ],
+      "falsification_criteria": "adoption_uplift < 1.2",
+      "test_method": "monte_carlo",
+      "cost_estimate": 10.0,
+      "expected_value": 800.0,
+      "risk": 0.7,
+      "reversibility": 0.3,
+      "lineage": ["v2.0.0"]
+    },
+    {
+      "id": "H_NICHE",
+      "claim": "Focusing on a single, narrow reviewer persona (Rust crate maintainers) beats broad targeting",
+      "variables": {
+        "adoption_uplift": 1.8,
+        "sigma": 0.2
+      },
+      "evidence_for": [
+        "niche communities are dense and high-trust",
+        "word-of-mouth propagates faster",
+        "competitive moat in vertical expertise"
+      ],
+      "evidence_against": [
+        "smaller total addressable market",
+        "niche fatigue if persona shifts"
+      ],
+      "falsification_criteria": "adoption_uplift < 1.2",
+      "test_method": "monte_carlo",
+      "cost_estimate": 15.0,
+      "expected_value": 250.0,
+      "risk": 0.3,
+      "reversibility": 0.7,
+      "lineage": ["v2.0.0", "H_NICHE_seed"]
+    }
+  ],
+  "metadata": {
+    "science_origin": "Diffusion of Innovations (Rogers, 1962); Christensen, The Innovator's Dilemma (1997)",
+    "contract": "schema/v3/problem.schema.json",
+    "ecosystem_impact": "additive, opt-in, non-breaking"
+  }
+}

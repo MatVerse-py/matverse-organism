@@ -1,0 +1,41 @@
+{
+  "package": "osx-symbios-v0.1",
+  "organism_mirror": "matverse-organism v3.8.0",
+  "release": "2026-07-15",
+  "constitution": {
+    "organs": 12,
+    "physics": 3,
+    "invariants": 8,
+    "thermodynamic_laws": 8,
+    "constitutional_laws": 8,
+    "captals_layers": 5,
+    "epistemic_states": 8
+  },
+  "interfaces": [
+    "constellation",
+    "notebook",
+    "figure_lab",
+    "cognitive_canvas",
+    "atlas",
+    "registry",
+    "organism_runtime"
+  ],
+  "figure_categories_deterministic": 7,
+  "figure_categories_fallback": 7,
+  "test_status": {
+    "smoke": "29/29 PASS",
+    "syntax": "PASS (all 6 JS files)",
+    "http_smoke": "PASS (all 7 files served 200)"
+  },
+  "constitutional_position": "The organism prepares, the operator signs, the world witnesses.",
+  "out_of_scope": [
+    "production runtime (HOLD)",
+    "blockchain anchor (HOLD)",
+    "independent machine replay (HOLD)",
+    "public CAPT token (HOLD)",
+    "Zenodo / GitHub Release / HF publication (HOLD)",
+    "multi-user",
+    "authentication",
+    "persistence"
+  ]
+}
