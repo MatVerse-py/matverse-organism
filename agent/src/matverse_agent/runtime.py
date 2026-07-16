@@ -2,34 +2,20 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 import subprocess
 import uuid
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any
 
 from .config import Settings
 from .ledger import Ledger
+from .mission import build_system_prompt, default_contract
 from .ollama_client import OllamaClient
 from .tools import ApprovalCallback, ToolRegistry
-
-
-SYSTEM_PROMPT = """You are MatVerse Agent Local, an autonomous engineering and research agent.
-
-Operating contract:
-1. Inspect the workspace before claiming anything about it.
-2. Convert the goal into concrete steps internally, then execute with tools.
-3. Prefer reversible changes, small diffs and existing project conventions.
-4. Run relevant tests, linters or validation before declaring completion.
-5. Never claim a file, test, build, publication or external action exists unless a tool result supports it.
-6. When a tool fails, diagnose and attempt a bounded correction.
-7. Do not invent metrics. Use NOT_MEASURED or NOT_COMPUTABLE when data is absent.
-8. Preserve user files and lineage. Do not delete or overwrite without necessity.
-9. Finish with a concise report: result, changed files, verification, residual risks and status.
-10. You are in a multi-turn tool loop. Continue calling tools until the goal is complete or blocked.
-"""
 
 
 @dataclass(frozen=True, slots=True)
@@ -63,6 +49,10 @@ class AgentRuntime:
         run_dir = self.settings.runs_dir / run_id
         run_dir.mkdir(parents=True, exist_ok=False)
         started_at = datetime.now(timezone.utc)
+        contract = default_contract(clean_goal)
+        system_prompt = build_system_prompt(self.settings.workspace, clean_goal)
+        baseline_git_status = self._raw_git_status()
+
         self.ledger.start_run(run_id, clean_goal)
         self.ledger.append(
             run_id,
@@ -73,12 +63,16 @@ class AgentRuntime:
                 "model": self.settings.model,
                 "approval_mode": self.settings.approval_mode,
                 "network_enabled": self.settings.network_enabled,
+                "problem_contract": json.loads(contract.render()),
+                "baseline_git_status": baseline_git_status,
             },
         )
         request = {
             "run_id": run_id,
             "goal": clean_goal,
+            "problem_contract": json.loads(contract.render()),
             "started_at": started_at.isoformat(),
+            "baseline_git_status": baseline_git_status,
             "settings": {
                 "model": self.settings.model,
                 "max_steps": self.settings.max_steps,
@@ -87,6 +81,7 @@ class AgentRuntime:
             },
         }
         self._write_json(run_dir / "request.json", request)
+        self._write_json(run_dir / "problem_contract.json", json.loads(contract.render()))
 
         registry = ToolRegistry(
             self.settings,
@@ -94,9 +89,13 @@ class AgentRuntime:
             run_id,
             approval_callback=self.approval_callback,
         )
+        user_message = (
+            f"GOAL:\n{clean_goal}\n\nDEFAULT PROBLEM CONTRACT:\n{contract.render()}\n\n"
+            "Inspect and refine this contract through tool-backed execution."
+        )
         messages: list[dict[str, Any]] = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": clean_goal},
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message},
         ]
         final = ""
         status = "BLOCK"
@@ -128,7 +127,7 @@ class AgentRuntime:
 
                 if not tool_calls:
                     final = str(assistant.get("content", "")).strip()
-                    status = "PASS" if final else "HOLD"
+                    status = self._status_from_final(final)
                     break
 
                 for call in tool_calls:
@@ -188,6 +187,9 @@ class AgentRuntime:
             "run_id": run_id,
             "status": status,
             "goal_sha256": hashlib.sha256(clean_goal.encode("utf-8")).hexdigest(),
+            "problem_contract_sha256": hashlib.sha256(
+                contract.render().encode("utf-8")
+            ).hexdigest(),
             "started_at": started_at.isoformat(),
             "finished_at": finished_at.isoformat(),
             "duration_seconds": (finished_at - started_at).total_seconds(),
@@ -195,6 +197,8 @@ class AgentRuntime:
             "tool_calls": tool_count,
             "model": self.settings.model,
             "workspace": str(self.settings.workspace),
+            "baseline_git_status": baseline_git_status,
+            "final_git_status": self._raw_git_status(),
             "changed_files": changed_files,
             "ledger_events": [
                 {"sequence": event.sequence, "event_hash": event.event_hash}
@@ -224,15 +228,44 @@ class AgentRuntime:
         if not goals:
             return []
         bounded_workers = max(1, min(workers, len(goals), 8))
+        isolated_settings = AgentRuntime._parallel_workspaces(settings, len(goals))
         results: list[RunResult] = []
         with ThreadPoolExecutor(max_workers=bounded_workers) as executor:
             futures = {
-                executor.submit(AgentRuntime(settings, approval_callback).run, goal): goal
-                for goal in goals
+                executor.submit(
+                    AgentRuntime(child_settings, approval_callback).run,
+                    goal,
+                ): goal
+                for child_settings, goal in zip(isolated_settings, goals, strict=True)
             }
             for future in as_completed(futures):
                 results.append(future.result())
         return sorted(results, key=lambda item: item.run_id)
+
+    @staticmethod
+    def _parallel_workspaces(settings: Settings, count: int) -> list[Settings]:
+        git_entry = settings.workspace / ".git"
+        if not git_entry.exists():
+            raise RuntimeError("Parallel mode requires a Git repository for isolated worktrees")
+        root = settings.state_dir / "worktrees"
+        root.mkdir(parents=True, exist_ok=True)
+        children: list[Settings] = []
+        for index in range(count):
+            nonce = uuid.uuid4().hex[:10]
+            branch = f"matverse-agent/{index + 1}-{nonce}"
+            target = root / f"agent-{index + 1}-{nonce}"
+            process = subprocess.run(
+                ["git", "worktree", "add", "-b", branch, str(target), "HEAD"],
+                cwd=settings.workspace,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                check=False,
+            )
+            if process.returncode != 0:
+                raise RuntimeError(f"Could not create worktree: {process.stderr.strip()}")
+            children.append(replace(settings, workspace=target.resolve()))
+        return children
 
     @staticmethod
     def _arguments(value: Any) -> dict[str, Any]:
@@ -259,6 +292,17 @@ class AgentRuntime:
     def _public_message(message: dict[str, Any]) -> dict[str, Any]:
         return {key: value for key, value in message.items() if key != "thinking"}
 
+    @staticmethod
+    def _status_from_final(final: str) -> str:
+        if not final:
+            return "HOLD"
+        match = re.search(r"(?im)^\s*(?:status\s*[:=]\s*)?(PASS|HOLD|BLOCK)\b", final)
+        if match:
+            return match.group(1).upper()
+        if re.search(r"(?i)\b(blocked|bloqueado|not executed|not present)\b", final):
+            return "BLOCK"
+        return "PASS"
+
     def _changed_files(self, started_at: datetime) -> list[dict[str, Any]]:
         git_rows = self._git_changed_files()
         if git_rows is not None:
@@ -272,6 +316,21 @@ class AgentRuntime:
                 continue
             rows.append(self._file_receipt(path, "modified"))
         return rows[:2000]
+
+    def _raw_git_status(self) -> list[str] | None:
+        if not (self.settings.workspace / ".git").exists():
+            return None
+        process = subprocess.run(
+            ["git", "status", "--short", "--untracked-files=all"],
+            cwd=self.settings.workspace,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=False,
+        )
+        if process.returncode != 0:
+            return None
+        return [line for line in process.stdout.splitlines() if line]
 
     def _git_changed_files(self) -> list[dict[str, Any]] | None:
         if not (self.settings.workspace / ".git").exists():
