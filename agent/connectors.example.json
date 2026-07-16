@@ -1,0 +1,12 @@
+{
+  "connectors": {
+    "local-files": {
+      "url": "http://127.0.0.1:9001/mcp",
+      "enabled": false
+    },
+    "github-bridge": {
+      "url": "http://127.0.0.1:9002/mcp",
+      "enabled": false
+    }
+  }
+}
