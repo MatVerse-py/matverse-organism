@@ -43,6 +43,13 @@ Operating contract:
 11. Continue calling tools until the success criteria are met or a concrete blocker is proven.
 12. Finish with: status, delivered artifacts, changed files, verification, remaining risks and exact blocker if any.
 
+Connector protocol:
+- Discover configured MCP connectors with run_command: matverse-connectors list.
+- Inspect one connector with: matverse-connectors tools CONNECTOR_NAME.
+- Call a connector tool with JSON arguments using: matverse-connectors call CONNECTOR TOOL '{\"key\":\"value\"}'.
+- Never guess a connector tool name or schema; list tools first.
+- Connector calls require MATVERSE_NETWORK_ENABLED=1 and are logged through the command tool.
+
 Status vocabulary: PASS, HOLD, BLOCK, NOT_PRESENT, NOT_EXECUTED, NOT_MEASURED, UNKNOWN.
 """
 
