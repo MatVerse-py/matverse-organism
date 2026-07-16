@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sqlite3
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -137,3 +138,56 @@ def test_final_status_parser_is_fail_closed() -> None:
     assert AgentRuntime._status_from_final("BLOCK\nMissing dependency") == "BLOCK"
     assert AgentRuntime._status_from_final("The run was blocked by tests") == "BLOCK"
     assert AgentRuntime._status_from_final("") == "HOLD"
+
+
+class FakeToolCallingModel:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def chat(
+        self,
+        messages: list[dict[str, Any]],
+        tools: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        assert messages
+        assert any(item["function"]["name"] == "write_file" for item in tools)
+        self.calls += 1
+        if self.calls == 1:
+            return {
+                "content": "",
+                "tool_calls": [
+                    {
+                        "function": {
+                            "name": "write_file",
+                            "arguments": {
+                                "path": "delivery.txt",
+                                "content": "verified delivery\n",
+                            },
+                        }
+                    }
+                ],
+            }
+        assert messages[-1]["role"] == "tool"
+        return {
+            "content": (
+                "STATUS: PASS\n"
+                "Delivered delivery.txt and verified the tool result."
+            )
+        }
+
+
+def test_autonomous_loop_creates_file_receipt_and_valid_ledger(tmp_path: Path) -> None:
+    settings = Settings.from_env(tmp_path, approval_mode="never")
+    runtime = AgentRuntime(settings)
+    runtime.client = FakeToolCallingModel()  # type: ignore[assignment]
+
+    result = runtime.run("Create a verified local delivery")
+
+    assert result.status == "PASS"
+    assert (tmp_path / "delivery.txt").read_text(encoding="utf-8") == "verified delivery\n"
+    receipt = json.loads(result.receipt_path.read_text(encoding="utf-8"))
+    assert receipt["tool_calls"] == 1
+    assert receipt["status"] == "PASS"
+    assert any(item["path"] == "delivery.txt" for item in receipt["changed_files"])
+    valid, message = runtime.ledger.verify()
+    assert valid, message
